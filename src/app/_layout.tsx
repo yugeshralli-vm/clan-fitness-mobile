@@ -3,9 +3,14 @@ import { ClerkProvider, useAuth } from "@clerk/expo";
 import { tokenCache } from "@clerk/expo/token-cache";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
+import * as WebBrowser from "expo-web-browser";
 import { useEffect } from "react";
 
 SplashScreen.preventAutoHideAsync();
+// Required by @clerk/expo's useSSO() — resolves the auth session promise when the
+// OAuth browser tab redirects back into the app (iOS in particular needs this called
+// once at module scope, not just inside the SSO flow itself).
+WebBrowser.maybeCompleteAuthSession();
 
 const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY;
 if (!publishableKey) {
