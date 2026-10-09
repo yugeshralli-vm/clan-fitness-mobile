@@ -1,15 +1,19 @@
 import { colors } from "@/styles/tokens";
 import { Activity, MessageSquare, Plus, Shield, User } from "lucide-react-native";
 import { Tabs } from "expo-router";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 // Mirrors clan-fitness's web BottomNav.tsx tab order/icons exactly (Feed/Clan/Log/Chat/Profile,
 // Log emphasized as the center action) — same icon choices, ported from lucide-react to
 // lucide-react-native.
 export default function AppTabsLayout() {
+  // Headers are off, so nothing else keeps screen content out from under the status bar.
+  const insets = useSafeAreaInsets();
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
+        sceneStyle: { backgroundColor: colors.background, paddingTop: insets.top },
         tabBarActiveTintColor: colors.accent,
         tabBarInactiveTintColor: colors.foregroundTertiary,
         tabBarStyle: { backgroundColor: colors.surface, borderTopColor: colors.surfaceBorder },

@@ -1,9 +1,3 @@
-import { Text, View } from "react-native";
+import { FeedScreen } from "@/features/feed";
 
-export default function FeedScreen() {
-  return (
-    <View className="flex-1 items-center justify-center bg-background">
-      <Text className="text-foregroundTertiary">Feed — coming soon</Text>
-    </View>
-  );
-}
+export default FeedScreen;

@@ -1,16 +1,15 @@
 import { useCallback, useEffect, useState } from "react";
 import { useApiToken } from "@/hooks/useApiToken";
-import { getMe } from "../services/me";
-import type { MeResponse } from "../types";
+import { getClans } from "../services/clans";
 
 /**
- * Phase-0 spike: proves the Bearer-token auth chain end-to-end against /api/v1/me. Every later
- * feature's data-fetching hooks follow this same shape (getToken from useAuth(), pass to a
- * feature service, track loading/error state) rather than each hand-rolling it.
+ * No clan switcher exists yet (Phase 3) — defaults to the user's first clan, same fallback the
+ * web app itself uses (src/lib/active-clan.ts's resolveActiveClanId) when nothing else is set.
  */
-export function useCurrentUser() {
+export function useActiveClanId() {
   const getToken = useApiToken();
-  const [user, setUser] = useState<MeResponse | null>(null);
+  const [clanId, setClanId] = useState<string | null>(null);
+  const [hasNoClans, setHasNoClans] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -18,8 +17,9 @@ export function useCurrentUser() {
     setLoading(true);
     setError(null);
     try {
-      const me = await getMe(getToken);
-      setUser(me);
+      const { clans } = await getClans(getToken);
+      setClanId(clans[0]?.id ?? null);
+      setHasNoClans(clans.length === 0);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong.");
     } finally {
@@ -31,5 +31,5 @@ export function useCurrentUser() {
     refresh();
   }, [refresh]);
 
-  return { user, error, loading, refresh };
+  return { clanId, hasNoClans, error, loading };
 }

@@ -1,16 +1,13 @@
 import { useCallback, useEffect, useState } from "react";
 import { useApiToken } from "@/hooks/useApiToken";
-import { getMe } from "../services/me";
-import type { MeResponse } from "../types";
+import { getLogs } from "../services/logs";
+import type { LogsResponse } from "../types";
 
-/**
- * Phase-0 spike: proves the Bearer-token auth chain end-to-end against /api/v1/me. Every later
- * feature's data-fetching hooks follow this same shape (getToken from useAuth(), pass to a
- * feature service, track loading/error state) rather than each hand-rolling it.
- */
-export function useCurrentUser() {
+const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+export function useTodaysLogs() {
   const getToken = useApiToken();
-  const [user, setUser] = useState<MeResponse | null>(null);
+  const [logs, setLogs] = useState<LogsResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -18,8 +15,8 @@ export function useCurrentUser() {
     setLoading(true);
     setError(null);
     try {
-      const me = await getMe(getToken);
-      setUser(me);
+      const response = await getLogs(getToken, timezone);
+      setLogs(response);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong.");
     } finally {
@@ -31,5 +28,5 @@ export function useCurrentUser() {
     refresh();
   }, [refresh]);
 
-  return { user, error, loading, refresh };
+  return { logs, setLogs, error, loading, refresh, timezone };
 }
