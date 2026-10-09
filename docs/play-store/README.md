@@ -1,6 +1,6 @@
 # Google Play: listing and Play Console answers
 
-Everything to paste into Play Console for **Clan Fitness** (`in.clanfitness.app`). The answers
+Everything to paste into Play Console for **Clan Fitness** (`com.clan.fitness`). The answers
 describe what the Android app actually does as of this commit. **Update them when it changes.**
 Before adding push notifications, re-check the Data safety section: push tokens count as
 "Device or other IDs".
