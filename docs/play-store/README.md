@@ -5,7 +5,7 @@ describe what the Android app actually does as of this commit. **Update them whe
 Before adding push notifications, re-check the Data safety section: push tokens count as
 "Device or other IDs".
 
-Graphics are in [`graphics/`](graphics/). Screenshots still need a demo account (see the end).
+Graphics are in [`graphics/`](graphics/); phone screenshots (1080 × 2160, from the demo clan) are in [`screenshots/`](screenshots/).
 
 ---
 
@@ -69,7 +69,7 @@ Clan Fitness also works on the web and as an installable app at clanfitness.in, 
 |---|---|
 | App icon (512 × 512) | `graphics/store-icon-512.png` |
 | Feature graphic (1024 × 500) | `graphics/feature-graphic-1024x500.png` |
-| Phone screenshots (2 to 8; aspect ratio at most 2:1, e.g. 1080 × 2160) | Still to capture, from a demo clan (see the end) |
+| Phone screenshots (2 to 8; aspect ratio at most 2:1) | `screenshots/1-feed.png` … `5-profile.png` (1080 × 2160, demo clan only) |
 
 **Categorization** (Store settings)
 
@@ -91,8 +91,8 @@ Clan Fitness also works on the web and as an installable app at clanfitness.in, 
 **All or some functionality is restricted.** Add instructions:
 
 - Name: `Reviewer account`
-- Username: *(the reviewer email, see the end)*
-- Password: *(the reviewer password)*
+- Username: `yugeshr16+playreview@gmail.com`
+- Password: *(kept out of the repo; it's with the app owner)*
 - Other information:
   ```
   Sign in with the email and password above (not "Continue with Google"). The account is in a demo clan with sample check-ins, so the Feed, Log and Profile tabs have data. Health Connect is optional: on the Log screen, "Get steps from Health Connect" asks for read-only Steps access and fills in the Steps field; nothing is saved until you tap Save.
@@ -173,8 +173,8 @@ Covered by the Data safety URL above, plus in-app deletion at Profile › Delete
 
 ## 4. Before the first release
 
-1. **Demo/reviewer account.** Create an email + password account in Clerk production, in a demo clan with a few demo members and sample check-ins. Use it for "App access" above and for the screenshots, so the listing never shows real members' names, photos or posts.
-2. **Screenshots.** Capture Feed, Log (with the summary card), Health Connect steps, and Profile from the demo account, cropped to 1080 × 2160 (2:1).
+1. ~~Demo/reviewer account~~: done. **Play Reviewer** (`yugeshr16+playreview@gmail.com`, username `playreviewer`) is the admin of the demo clan **Morning Movers**, with four demo members (Priya Sharma, Rahul Kapoor, Ananya Rao, Vikram Patel; emails `yugeshr16+demo1..4@gmail.com`, no passwords, notifications off) and sample check-ins, reactions, comments and chat from Oct 6 to 9, 2026. None of these accounts is in a real clan. Clerk's Client Trust (password sign-in email code on new devices) is **off** in production, so reviewers can sign in with just the password.
+2. ~~Screenshots~~: done (`screenshots/`). Retake them from the demo account when the UI changes.
 3. **Signed release bundle (AAB).** Create an upload key, kept outside the repo and backed up, build `bundleRelease`, and enrol in Play App Signing on first upload.
 4. **Testing track.** Personal developer accounts created after November 2023 must run a **closed test with at least 12 testers for 14 days** before they can publish to production. Check whether that applies to your account (Play Console shows it on the Dashboard).
 5. Upload to **Internal testing** first, install from the Play link on a real phone, and check sign-in, Health Connect and account deletion.
