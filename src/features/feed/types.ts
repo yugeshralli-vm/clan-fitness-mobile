@@ -1,3 +1,5 @@
+import type { ReactionCounts } from "@/features/reactions";
+
 export type FeedEntry = {
   id: string;
   type: "gym" | "steps" | "food" | "thought";
@@ -8,8 +10,6 @@ export type FeedEntry = {
   photoUrls: string[];
 };
 
-/** Per emoji, as the web ReactionBar shows it: how many, and whether the viewer is one of them. */
-export type ReactionCounts = Record<string, { count: number; reactedByMe: boolean }>;
 
 export type FeedCard = {
   cardId: string;

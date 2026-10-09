@@ -43,7 +43,7 @@ export function FeedScreen() {
       contentContainerStyle={{ paddingHorizontal: 24, paddingTop: 32, paddingBottom: 32 }}
       sections={sections.map((section) => ({ ...section, data: section.cards }))}
       keyExtractor={(card) => card.cardId}
-      renderItem={({ item }) => <FeedCard card={item} />}
+      renderItem={({ item }) => <FeedCard card={item} clanId={activeClan.id} />}
       renderSectionHeader={({ section }) => <FeedSectionHeader dayLabel={section.dayLabel} />}
       ItemSeparatorComponent={() => <View className="h-3" />}
       renderSectionFooter={() => <View className="h-6" />}

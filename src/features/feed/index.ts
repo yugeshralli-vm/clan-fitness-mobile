@@ -1,2 +1,2 @@
 export { FeedScreen } from "./components/FeedScreen";
-export type { FeedCard, FeedEntry, FeedResponse, FeedSection, ReactionCounts } from "./types";
+export type { FeedCard, FeedEntry, FeedResponse, FeedSection } from "./types";

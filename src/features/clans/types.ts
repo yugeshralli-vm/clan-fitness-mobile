@@ -11,3 +11,11 @@ export type Clan = {
 export type ClansResponse = {
   clans: Clan[];
 };
+
+export type ClanMember = {
+  id: string;
+  name: string;
+  avatarUrl: string | null;
+  level: number;
+  role: "admin" | "member";
+};
