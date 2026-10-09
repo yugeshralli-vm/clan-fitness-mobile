@@ -6,14 +6,14 @@
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "clanfitnessmobile",
-    "userInterfaceStyle": "automatic",
+    "userInterfaceStyle": "dark",
     "ios": {
       "icon": "./assets/expo.icon",
       "bundleIdentifier": "in.clanfitness.app"
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
+        "backgroundColor": "#0d0d0d",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
@@ -22,7 +22,8 @@
       "package": "in.clanfitness.app",
       "permissions": [
         "android.permission.health.READ_STEPS"
-      ]
+      ],
+      "versionCode": 1
     },
     "web": {
       "output": "static",
@@ -33,9 +34,9 @@
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#208AEF",
+          "backgroundColor": "#0d0d0d",
           "image": "./assets/images/splash-icon.png",
-          "imageWidth": 76
+          "imageWidth": 120
         }
       ],
       "expo-secure-store",
