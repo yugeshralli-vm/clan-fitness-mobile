@@ -21,18 +21,26 @@ export class ApiError extends Error {
 
 export async function apiFetch<T>(
   path: string,
-  getToken: () => Promise<string | null>,
+  getToken: (options?: { skipCache?: boolean }) => Promise<string | null>,
   init?: RequestInit,
 ): Promise<T> {
-  const token = await getToken();
-  const response = await fetch(`${API_BASE_URL}${path}`, {
-    ...init,
-    headers: {
-      ...init?.headers,
-      Authorization: token ? `Bearer ${token}` : "",
-      "Content-Type": "application/json",
-    },
-  });
+  const send = async (skipCache: boolean) => {
+    const token = await getToken(skipCache ? { skipCache: true } : undefined);
+    return fetch(`${API_BASE_URL}${path}`, {
+      ...init,
+      headers: {
+        ...init?.headers,
+        Authorization: token ? `Bearer ${token}` : "",
+        "Content-Type": "application/json",
+      },
+    });
+  };
+
+  // Clerk session tokens live 60s and the SDK decides when to refresh by the device clock, so a
+  // phone whose clock runs slow sends a token the server already considers expired. On a 401,
+  // fetch a fresh token and retry once.
+  let response = await send(false);
+  if (response.status === 401) response = await send(true);
 
   if (!response.ok) {
     const body = await response.text();

@@ -7,11 +7,13 @@ import { useCallback, useEffect, useRef } from "react";
  * a fetch that sets state on completion turns that into an endless refetch loop. This keeps the
  * latest `getToken` in a ref and hands out one function that never changes.
  */
-export function useApiToken(): () => Promise<string | null> {
+export type GetToken = (options?: { skipCache?: boolean }) => Promise<string | null>;
+
+export function useApiToken(): GetToken {
   const { getToken } = useAuth();
   const getTokenRef = useRef(getToken);
   useEffect(() => {
     getTokenRef.current = getToken;
   });
-  return useCallback(() => getTokenRef.current(), []);
+  return useCallback((options?: { skipCache?: boolean }) => getTokenRef.current(options), []);
 }
