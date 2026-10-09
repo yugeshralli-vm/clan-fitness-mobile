@@ -1,10 +1,11 @@
 import { Image } from "expo-image";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ActivityIndicator, RefreshControl, ScrollView, View } from "react-native";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Text } from "@/components/ui/Text";
 import { Toggle } from "@/components/ui/Toggle";
+import { StepSyncStatus, useStepSync } from "@/features/health";
 import { colors } from "@/styles/tokens";
 import { useSaveLog } from "../hooks/useSaveLog";
 import { useTodaysLogs } from "../hooks/useTodaysLogs";
@@ -27,6 +28,16 @@ const STATUS_OPTIONS: { value: FoodStatus; label: string }[] = [
 export function LogsScreen() {
   const { logs, setLogs, error: loadError, loading, refresh, timezone } = useTodaysLogs();
   const { save, saving, error: saveError } = useSaveLog(setLogs);
+  const { syncedVersion } = useStepSync();
+
+  // A Health Connect sync changed today's steps on the server — show the new count. Only the steps
+  // field is refreshed from it, so anything half-typed in the other fields survives.
+  const stepsOnlyRefresh = useRef(false);
+  useEffect(() => {
+    if (syncedVersion === 0) return;
+    stepsOnlyRefresh.current = true;
+    refresh();
+  }, [syncedVersion, refresh]);
 
   const [workedOut, setWorkedOut] = useState(false);
   const [gymNote, setGymNote] = useState("");
@@ -37,6 +48,11 @@ export function LogsScreen() {
 
   useEffect(() => {
     if (!logs) return;
+    if (stepsOnlyRefresh.current) {
+      stepsOnlyRefresh.current = false;
+      setStepsCount(logs.steps ? String(logs.steps.count) : "");
+      return;
+    }
     setWorkedOut(false);
     setGymNote(logs.gym?.note ?? "");
     setStepsCount(logs.steps ? String(logs.steps.count) : "");
@@ -60,7 +76,7 @@ export function LogsScreen() {
     save({
       timezone,
       workedOut,
-      gymNote: gymNote.trim() || undefined,
+      gymNote: gymNote.trim(),
       stepsCount: stepsCount.trim() ? Number(stepsCount) : undefined,
       foodStatus,
       foodNote: foodNote.trim() || undefined,
@@ -101,6 +117,7 @@ export function LogsScreen() {
             placeholder="Steps today"
             keyboardType="number-pad"
           />
+          <StepSyncStatus />
         </LogSection>
 
         <LogSection emoji="🥗" title="Nutrition">
