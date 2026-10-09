@@ -1,7 +1,8 @@
 import { useSignIn, useSSO } from "@clerk/expo";
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import { Pressable, Text, TextInput, View } from "react-native";
+import { Pressable, TextInput, View } from "react-native";
+import { Text } from "@/components/ui/Text";
 import Svg, { Path } from "react-native-svg";
 
 export function SignInForm() {

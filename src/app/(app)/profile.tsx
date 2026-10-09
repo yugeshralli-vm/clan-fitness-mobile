@@ -1,6 +1,7 @@
 import { useAuth } from "@clerk/expo";
 import { useCurrentUser } from "@/features/auth";
-import { ActivityIndicator, Image, Pressable, Text, View } from "react-native";
+import { ActivityIndicator, Image, Pressable, View } from "react-native";
+import { Text } from "@/components/ui/Text";
 
 // Phase-0 spike screen: proves the Bearer-token auth chain end-to-end by rendering the real
 // /api/v1/me response, not a placeholder. Every later feature's real screen replaces its own

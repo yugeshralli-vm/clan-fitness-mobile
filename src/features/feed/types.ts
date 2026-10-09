@@ -1,14 +1,3 @@
-export type Clan = {
-  id: string;
-  name: string;
-  imageUrl: string | null;
-  role: "admin" | "member";
-};
-
-export type ClansResponse = {
-  clans: Clan[];
-};
-
 export type FeedEntry = {
   id: string;
   type: "gym" | "steps" | "food" | "thought";
@@ -16,14 +5,18 @@ export type FeedEntry = {
   createdAt: string;
   icon: string;
   caption: string;
+  photoUrls: string[];
 };
+
+/** Per emoji, as the web ReactionBar shows it: how many, and whether the viewer is one of them. */
+export type ReactionCounts = Record<string, { count: number; reactedByMe: boolean }>;
 
 export type FeedCard = {
   cardId: string;
-  user: { id: string; name: string; avatarUrl: string | null };
+  user: { id: string; name: string; avatarUrl: string | null; level: number };
   latestAt: string;
   entries: FeedEntry[];
-  reactionCount: number;
+  reactions: ReactionCounts;
   commentCount: number;
 };
 

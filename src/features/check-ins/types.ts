@@ -3,9 +3,12 @@ export type FoodStatus = "yes" | "no" | "partial";
 export type LogsResponse = {
   gym: { note?: string } | null;
   steps: { count: number } | null;
-  food: { status?: FoodStatus; note?: string } | null;
+  food: { status?: FoodStatus; note?: string; photoUrls?: string[] } | null;
   thought: { text: string } | null;
   dailyStepsTarget: number;
+  weeklyGymCount: number;
+  weeklyGymTarget: number;
+  gymStreak: number;
   hasLoggedToday: boolean;
 };
 

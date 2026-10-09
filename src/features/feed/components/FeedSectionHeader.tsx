@@ -1,13 +1,6 @@
-import { Text, View } from "react-native";
+import { Text } from "@/components/ui/Text";
 
-type Props = {
-  dayLabel: string;
-};
-
-export function FeedSectionHeader({ dayLabel }: Props) {
-  return (
-    <View className="bg-background px-4 pb-2 pt-4">
-      <Text className="text-xs font-semibold uppercase tracking-wide text-foregroundTertiary">{dayLabel}</Text>
-    </View>
-  );
+/** Web FeedList's day heading: xs, semibold, uppercase, wide tracking, tertiary. */
+export function FeedSectionHeader({ dayLabel }: { dayLabel: string }) {
+  return <Text className="mb-3 text-xs font-semibold uppercase tracking-wide text-foregroundTertiary">{dayLabel}</Text>;
 }
