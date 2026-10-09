@@ -90,7 +90,8 @@
             "minSdkVersion": 26
           }
         }
-      ]
+      ],
+      "./plugins/withHealthConnectPrivacyPolicy"
     ],
     "experiments": {
       "typedRoutes": true,
