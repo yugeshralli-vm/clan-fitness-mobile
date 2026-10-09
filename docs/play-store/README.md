@@ -175,6 +175,19 @@ Covered by the Data safety URL above, plus in-app deletion at Profile › Delete
 
 1. ~~Demo/reviewer account~~: done. **Play Reviewer** (`yugeshr16+playreview@gmail.com`, username `playreviewer`) is the admin of the demo clan **Morning Movers**, with four demo members (Priya Sharma, Rahul Kapoor, Ananya Rao, Vikram Patel; emails `yugeshr16+demo1..4@gmail.com`, no passwords, notifications off) and sample check-ins, reactions, comments and chat from Oct 6 to 9, 2026. None of these accounts is in a real clan. Clerk's Client Trust (password sign-in email code on new devices) is **off** in production, so reviewers can sign in with just the password.
 2. ~~Screenshots~~: done (`screenshots/`). Retake them from the demo account when the UI changes.
-3. **Signed release bundle (AAB).** Create an upload key, kept outside the repo and backed up, build `bundleRelease`, and enrol in Play App Signing on first upload.
+3. **Signed release bundle (AAB).** The upload key lives **outside the repo** at
+   `~/.android-keys/clan-fitness-upload.jks`, with its passwords in
+   `~/.android-keys/clan-fitness-upload.properties`. `plugins/withReleaseSigning.js` reads those at
+   build time, and without them release builds fall back to the debug key. **Back up both files**
+   (e.g. a password manager). If they're lost, updates need an upload-key reset through Play support.
+   Upload key SHA-256: `3D:6E:77:79:8C:68:86:85:C6:6C:DA:41:F2:3D:CA:92:D9:30:45:F1:F8:A8:00:55:68:F1:59:C5:32:1A:26:6B`.
+
+   To build a release:
+   1. Bump `expo.android.versionCode` in app.json (and `version` for a user-visible change). Play
+      rejects a versionCode it has seen before.
+   2. Check `.env` points at production (`EXPO_PUBLIC_API_BASE_URL=https://www.clanfitness.in`, live Clerk key).
+   3. `CI=1 npx expo prebuild --clean --platform android && (cd android && ./gradlew bundleRelease)`
+   4. Upload `android/app/build/outputs/bundle/release/app-release.aab`. On the first upload, accept
+      **Play App Signing** (Google holds the app-signing key; yours is only the upload key).
 4. **Testing track.** Personal developer accounts created after November 2023 must run a **closed test with at least 12 testers for 14 days** before they can publish to production. Check whether that applies to your account (Play Console shows it on the Dashboard).
 5. Upload to **Internal testing** first, install from the Play link on a real phone, and check sign-in, Health Connect and account deletion.

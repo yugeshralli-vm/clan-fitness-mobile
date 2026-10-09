@@ -92,7 +92,8 @@
           }
         }
       ],
-      "./plugins/withHealthConnectPrivacyPolicy"
+      "./plugins/withHealthConnectPrivacyPolicy",
+      "./plugins/withReleaseSigning"
     ],
     "experiments": {
       "typedRoutes": true,
