@@ -1,34 +1,38 @@
 import { useAuth } from "@clerk/expo";
-import { useCurrentUser } from "@/features/auth";
-import { ActivityIndicator, Image, Pressable, View } from "react-native";
+import { ActivityIndicator, ScrollView, View } from "react-native";
+import { Avatar } from "@/components/shared/Avatar";
+import { Button } from "@/components/ui/Button";
 import { Text } from "@/components/ui/Text";
+import { DeleteAccountSection } from "@/features/account";
+import { useCurrentUser } from "@/features/auth";
+import { colors } from "@/styles/tokens";
 
-// Phase-0 spike screen: proves the Bearer-token auth chain end-to-end by rendering the real
-// /api/v1/me response, not a placeholder. Every later feature's real screen replaces its own
-// "coming soon" tab the same way this one already does for Profile.
+// Interim Profile tab until the web profile page (heatmap, history, goals, settings) is ported:
+// who you're signed in as, sign out, and account deletion (which Google Play requires in-app).
 export default function ProfileScreen() {
   const { signOut } = useAuth();
-  const { user, error, loading, refresh } = useCurrentUser();
+  const { user, error, loading } = useCurrentUser();
 
   return (
-    <View className="flex-1 items-center justify-center gap-4 bg-background px-6">
-      {loading && <ActivityIndicator color="#3bffad" />}
-      {error && <Text className="text-center text-danger">{error}</Text>}
+    <ScrollView className="flex-1" contentContainerStyle={{ paddingHorizontal: 24, paddingVertical: 32, gap: 32 }}>
+      {loading && <ActivityIndicator color={colors.accent} />}
+      {error && <Text className="text-danger">{error}</Text>}
       {user && (
-        <>
-          {user.avatarUrl && (
-            <Image source={{ uri: user.avatarUrl }} className="h-20 w-20 rounded-full" />
-          )}
-          <Text className="text-xl font-bold text-foreground">{user.name}</Text>
-          <Text className="text-foregroundSecondary">{user.email}</Text>
-        </>
+        <View className="flex-row items-center gap-3">
+          <Avatar name={user.name} avatarUrl={user.avatarUrl} size={56} />
+          <View className="min-w-0 flex-1">
+            <Text className="text-xl font-bold" numberOfLines={1}>
+              {user.name}
+            </Text>
+            <Text className="text-sm text-foregroundSecondary" numberOfLines={1}>
+              {user.email}
+            </Text>
+          </View>
+        </View>
       )}
-      <Pressable onPress={refresh} className="rounded-lg border border-surfaceBorder px-4 py-2">
-        <Text className="text-foreground">Refresh</Text>
-      </Pressable>
-      <Pressable onPress={() => signOut()} className="rounded-lg bg-danger px-4 py-2">
-        <Text className="font-bold text-white">Sign out</Text>
-      </Pressable>
-    </View>
+      <Button variant="secondary" title="Sign out" onPress={() => signOut()} />
+      <View className="h-px bg-surfaceBorder" />
+      <DeleteAccountSection />
+    </ScrollView>
   );
 }
