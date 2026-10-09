@@ -23,11 +23,12 @@ export const colors = {
   edge: "#3d3d3d",
 } as const;
 
-// TODO: web loads Satoshi as .woff2 (src/app/fonts/*.woff2 in clan-fitness) — React Native's
-// expo-font needs .ttf/.otf instead. Falls back to the system font until those files are
-// sourced; swap this value (and add the actual expo-font useFonts() load) once available.
+// Satoshi, same as the web app (src/app/fonts/*.woff2 there, converted to .ttf here). Embedded at
+// build time by expo-font's config plugin (app.json) as one Android font family with real weight
+// files, so `font-semibold`/`font-bold` pick Satoshi-Bold etc. instead of faux-bolding Regular.
+// 600 maps to Bold, matching what browsers pick for `font-semibold` with only 500/700 available.
 export const fonts = {
-  sans: "System",
+  sans: "Satoshi",
 } as const;
 
 export type ColorToken = keyof typeof colors;
