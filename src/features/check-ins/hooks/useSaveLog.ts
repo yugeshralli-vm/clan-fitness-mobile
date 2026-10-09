@@ -1,10 +1,10 @@
-import { useAuth } from "@clerk/expo";
 import { useCallback, useState } from "react";
+import { useApiToken } from "@/hooks/useApiToken";
 import { saveLogs } from "../services/logs";
 import type { LogCheckInRequest, LogsResponse } from "../types";
 
 export function useSaveLog(onSaved: (logs: LogsResponse) => void) {
-  const { getToken } = useAuth();
+  const getToken = useApiToken();
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 

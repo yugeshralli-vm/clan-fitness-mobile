@@ -1,5 +1,5 @@
-import { useAuth } from "@clerk/expo";
 import { useCallback, useEffect, useState } from "react";
+import { useApiToken } from "@/hooks/useApiToken";
 import { getClans } from "../services/clans";
 
 /**
@@ -7,7 +7,7 @@ import { getClans } from "../services/clans";
  * web app itself uses (src/lib/active-clan.ts's resolveActiveClanId) when nothing else is set.
  */
 export function useActiveClanId() {
-  const { getToken } = useAuth();
+  const getToken = useApiToken();
   const [clanId, setClanId] = useState<string | null>(null);
   const [hasNoClans, setHasNoClans] = useState(false);
   const [error, setError] = useState<string | null>(null);

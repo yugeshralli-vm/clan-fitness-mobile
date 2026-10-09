@@ -1,12 +1,12 @@
-import { useAuth } from "@clerk/expo";
 import { useCallback, useEffect, useState } from "react";
+import { useApiToken } from "@/hooks/useApiToken";
 import { getLogs } from "../services/logs";
 import type { LogsResponse } from "../types";
 
 const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
 export function useTodaysLogs() {
-  const { getToken } = useAuth();
+  const getToken = useApiToken();
   const [logs, setLogs] = useState<LogsResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);

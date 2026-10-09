@@ -1,5 +1,5 @@
-import { useAuth } from "@clerk/expo";
 import { useCallback, useEffect, useState } from "react";
+import { useApiToken } from "@/hooks/useApiToken";
 import { getFeed } from "../services/feed";
 import type { FeedSection } from "../types";
 
@@ -20,7 +20,7 @@ function mergeSections(existing: FeedSection[], incoming: FeedSection[]): FeedSe
 }
 
 export function useClanFeed(clanId: string | null) {
-  const { getToken } = useAuth();
+  const getToken = useApiToken();
   const [sections, setSections] = useState<FeedSection[]>([]);
   const [hasMore, setHasMore] = useState(false);
   const [nextCursor, setNextCursor] = useState<string | null>(null);

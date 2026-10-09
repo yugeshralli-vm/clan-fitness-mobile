@@ -12,10 +12,12 @@ SplashScreen.preventAutoHideAsync();
 // once at module scope, not just inside the SSO flow itself).
 WebBrowser.maybeCompleteAuthSession();
 
-const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY;
-if (!publishableKey) {
+const envPublishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY;
+if (!envPublishableKey) {
   throw new Error("EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY is not set — check .env.");
 }
+// Re-bound so the narrowing survives into RootLayout (TS doesn't carry it across function scopes).
+const publishableKey: string = envPublishableKey;
 
 // Dual-guard pattern: (app) is reachable only when signed in, (auth) only when signed out —
 // Expo Router/Clerk's current recommended approach, replacing the older useAuth()+<Redirect>

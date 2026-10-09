@@ -1,5 +1,5 @@
-import { useAuth } from "@clerk/expo";
 import { useCallback, useEffect, useState } from "react";
+import { useApiToken } from "@/hooks/useApiToken";
 import { getMe } from "../services/me";
 import type { MeResponse } from "../types";
 
@@ -9,7 +9,7 @@ import type { MeResponse } from "../types";
  * feature service, track loading/error state) rather than each hand-rolling it.
  */
 export function useCurrentUser() {
-  const { getToken } = useAuth();
+  const getToken = useApiToken();
   const [user, setUser] = useState<MeResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
