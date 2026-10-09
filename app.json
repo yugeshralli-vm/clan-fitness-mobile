@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "clan-fitness-mobile",
+    "name": "Clan Fitness",
     "slug": "clan-fitness-mobile",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -9,7 +9,7 @@
     "userInterfaceStyle": "automatic",
     "ios": {
       "icon": "./assets/expo.icon",
-      "bundleIdentifier": "com.anonymous.clan-fitness-mobile"
+      "bundleIdentifier": "in.clanfitness.app"
     },
     "android": {
       "adaptiveIcon": {
@@ -19,7 +19,7 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "predictiveBackGestureEnabled": false,
-      "package": "com.anonymous.clanfitnessmobile"
+      "package": "in.clanfitness.app"
     },
     "web": {
       "output": "static",
