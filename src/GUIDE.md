@@ -44,6 +44,25 @@ NativeWind's theme, so `bg-background`/`text-accent`-style classes resolve to it
 NativeWind can't reach (status bar, splash screen, SVG fill props) imports the same constants
 directly. Never hardcode a hex/px value at the call site — add it to `tokens.ts` first.
 
+## UI parity with the PWA
+
+The app must look exactly like the PWA (clanfitness.in). Every screen is a 1:1 port of the web
+component's Tailwind classes — same sizes, spacing, colors, copy — not a redesign:
+
+- **Port, don't redesign.** Open the web component (e.g. `src/features/feed/components/FeedList.tsx`
+  in the web repo) and translate its markup class by class. Shared web primitives have ports in
+  `src/components/ui` (Button, Input, Toggle, BottomSheet, ProgressRing/Bar, PhotoCarousel) and
+  `src/components/shared` (Avatar, LevelBadge, AppHeader, BottomNav) — reuse them.
+- **Use `@/components/ui/Text`, never react-native's Text.** It applies Satoshi, 16px and the body
+  color by default (RN defaults to the system font at 14px), and only when no size/color class is
+  passed — NativeWind resolves conflicting classes by stylesheet order, not className order.
+- **rem is 16** (`inlineRem: 16` in metro.config.js), matching the web. NativeWind's default 14
+  made every rem-based class ~12% smaller.
+- **Satoshi** is embedded by expo-font's config plugin (app.json) as one Android font family with
+  real weight files; `font-semibold` maps to Bold, as browsers do.
+- **Check against the PWA before calling a screen done:** screenshot the same screen in the PWA and
+  the app on the same emulator and compare side by side (see `docs/parity/`).
+
 ## Auth
 
 `@clerk/expo` (same Clerk project as web — same users/sessions). Client calls

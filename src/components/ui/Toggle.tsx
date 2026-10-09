@@ -27,7 +27,7 @@ export function Toggle({
       className={`min-h-11 flex-row items-center gap-2 self-start rounded-full border px-4 ${checked ? "border-accent" : "border-surfaceBorder"}`}
     >
       {kind === "checkbox" ? (
-        <View className={`h-5 w-5 items-center justify-center rounded-sm ${checked ? "bg-accent" : "bg-foregroundTertiary"}`}>
+        <View className={`h-5 w-5 items-center justify-center rounded-sm ${checked ? "bg-accent" : "bg-white"}`}>
           {checked && <Check size={14} strokeWidth={3} color={colors.accentForeground} />}
         </View>
       ) : (
