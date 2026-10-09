@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Text } from "@/components/ui/Text";
 import { Toggle } from "@/components/ui/Toggle";
-import { StepSyncStatus, useStepSync } from "@/features/health";
+import { HealthStepsStatus, useHealthSteps } from "@/features/health";
 import { colors } from "@/styles/tokens";
 import { useSaveLog } from "../hooks/useSaveLog";
 import { useTodaysLogs } from "../hooks/useTodaysLogs";
@@ -28,16 +28,9 @@ const STATUS_OPTIONS: { value: FoodStatus; label: string }[] = [
 export function LogsScreen() {
   const { logs, setLogs, error: loadError, loading, refresh, timezone } = useTodaysLogs();
   const { save, saving, error: saveError } = useSaveLog(setLogs);
-  const { syncedVersion } = useStepSync();
-
-  // A Health Connect sync changed today's steps on the server — show the new count. Only the steps
-  // field is refreshed from it, so anything half-typed in the other fields survives.
-  const stepsOnlyRefresh = useRef(false);
-  useEffect(() => {
-    if (syncedVersion === 0) return;
-    stepsOnlyRefresh.current = true;
-    refresh();
-  }, [syncedVersion, refresh]);
+  const { steps: healthSteps } = useHealthSteps();
+  // Once the user types in the Steps field, Health Connect stops overwriting it.
+  const stepsEdited = useRef(false);
 
   const [workedOut, setWorkedOut] = useState(false);
   const [gymNote, setGymNote] = useState("");
@@ -48,11 +41,7 @@ export function LogsScreen() {
 
   useEffect(() => {
     if (!logs) return;
-    if (stepsOnlyRefresh.current) {
-      stepsOnlyRefresh.current = false;
-      setStepsCount(logs.steps ? String(logs.steps.count) : "");
-      return;
-    }
+    stepsEdited.current = false;
     setWorkedOut(false);
     setGymNote(logs.gym?.note ?? "");
     setStepsCount(logs.steps ? String(logs.steps.count) : "");
@@ -60,6 +49,13 @@ export function LogsScreen() {
     setFoodNote(logs.food?.note ?? "");
     setThought(logs.thought?.text ?? "");
   }, [logs]);
+
+  // Offer Health Connect's count in the Steps field when it's higher than what's logged. It's only a
+  // prefill: nothing is logged or posted to the feed until the user taps Save.
+  useEffect(() => {
+    if (healthSteps === null || !logs || stepsEdited.current) return;
+    if (healthSteps > (logs.steps?.count ?? 0)) setStepsCount(String(healthSteps));
+  }, [healthSteps, logs]);
 
   if (!logs) {
     return (
@@ -113,11 +109,14 @@ export function LogsScreen() {
         <LogSection emoji="👟" title="Steps" aside={`Goal: ${logs.dailyStepsTarget.toLocaleString("en-US")}/day`}>
           <Input
             value={stepsCount}
-            onChangeText={(text) => setStepsCount(text.replace(/[^0-9]/g, ""))}
+            onChangeText={(text) => {
+              stepsEdited.current = true;
+              setStepsCount(text.replace(/[^0-9]/g, ""));
+            }}
             placeholder="Steps today"
             keyboardType="number-pad"
           />
-          <StepSyncStatus />
+          <HealthStepsStatus />
         </LogSection>
 
         <LogSection emoji="🥗" title="Nutrition">

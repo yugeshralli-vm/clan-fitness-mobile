@@ -1,2 +1,2 @@
-export { StepSyncProvider, useStepSync } from "./StepSyncProvider";
-export { StepSyncStatus } from "./components/StepSyncStatus";
+export { HealthStepsProvider, useHealthSteps } from "./HealthStepsProvider";
+export { HealthStepsStatus } from "./components/HealthStepsStatus";
