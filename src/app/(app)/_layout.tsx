@@ -3,7 +3,7 @@ import { View } from "react-native";
 import { AppHeader } from "@/components/shared/AppHeader";
 import { BottomNav } from "@/components/shared/BottomNav";
 import { ActiveClanProvider } from "@/features/clans";
-import { StepSyncProvider } from "@/features/health";
+import { HealthStepsProvider } from "@/features/health";
 import { colors } from "@/styles/tokens";
 
 // Same shell as the web app's (app)/layout.tsx: header on top, tab content, BottomNav below —
@@ -11,7 +11,7 @@ import { colors } from "@/styles/tokens";
 export default function AppTabsLayout() {
   return (
     <ActiveClanProvider>
-      <StepSyncProvider>
+      <HealthStepsProvider>
         <View className="flex-1 bg-background">
           <AppHeader />
           <Tabs
@@ -25,7 +25,7 @@ export default function AppTabsLayout() {
             <Tabs.Screen name="profile" />
           </Tabs>
         </View>
-      </StepSyncProvider>
+      </HealthStepsProvider>
     </ActiveClanProvider>
   );
 }

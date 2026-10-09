@@ -2,7 +2,7 @@ import { Pressable, View } from "react-native";
 import { Button } from "@/components/ui/Button";
 import { Text } from "@/components/ui/Text";
 import { openHealthConnectSettings } from "../services/health-connect";
-import { useStepSync } from "../StepSyncProvider";
+import { useHealthSteps } from "../HealthStepsProvider";
 
 function timeAgo(at: number) {
   const minutes = Math.round((Date.now() - at) / 60000);
@@ -16,8 +16,8 @@ function timeAgo(at: number) {
  * primitives and text styles as the rest of the ported Log form — secondary Button, xs tertiary
  * helper text, accent text link — so it reads as part of the web design.
  */
-export function StepSyncStatus() {
-  const { status, lastSync, syncing, connect, syncNow } = useStepSync();
+export function HealthStepsStatus() {
+  const { status, steps, readAt, reading, connect, refresh } = useHealthSteps();
 
   if (status === "checking" || status === "unavailable") return null;
 
@@ -25,7 +25,8 @@ export function StepSyncStatus() {
     return (
       <Pressable onPress={openHealthConnectSettings}>
         <Text className="text-xs text-foregroundTertiary">
-          Update Health Connect to sync your steps automatically. <Text className="text-xs font-semibold text-accent">Open</Text>
+          Update Health Connect to fill in your steps automatically.{" "}
+          <Text className="text-xs font-semibold text-accent">Open</Text>
         </Text>
       </Pressable>
     );
@@ -35,24 +36,24 @@ export function StepSyncStatus() {
     return (
       <View className="gap-2">
         <Text className="text-xs text-foregroundTertiary">
-          Fill in your steps automatically from Google Fit, Samsung Health, Fitbit and other apps.
+          Fill in your steps from Google Fit, Samsung Health, Fitbit and other apps. Nothing is logged until you save.
         </Text>
-        <Button variant="secondary" title="Sync steps from Health Connect" onPress={connect} />
+        <Button variant="secondary" title="Get steps from Health Connect" onPress={connect} />
       </View>
     );
   }
 
   return (
     <View className="flex-row items-center justify-between gap-2">
-      {/* flex-1 + a single-line link: Android otherwise mis-measures the pair and clips "Sync now". */}
+      {/* flex-1 + a single-line link: Android otherwise mis-measures the pair and clips the link. */}
       <Text className="flex-1 text-xs text-foregroundTertiary">
-        {lastSync
-          ? `Synced from Health Connect · ${lastSync.steps.toLocaleString("en-US")} steps · ${timeAgo(lastSync.at)}`
-          : "Syncing from Health Connect automatically"}
+        {steps !== null && readAt !== null
+          ? `Health Connect: ${steps.toLocaleString("en-US")} steps today · ${timeAgo(readAt)}`
+          : "Reading steps from Health Connect…"}
       </Text>
-      <Pressable onPress={syncNow} disabled={syncing} className="min-h-11 shrink-0 justify-center">
+      <Pressable onPress={refresh} disabled={reading} className="min-h-11 shrink-0 justify-center">
         <Text numberOfLines={1} className="text-xs font-semibold text-accent">
-          {syncing ? "Syncing…" : "Sync now"}
+          {reading ? "Reading…" : "Refresh"}
         </Text>
       </Pressable>
     </View>
