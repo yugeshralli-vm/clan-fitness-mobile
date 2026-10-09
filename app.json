@@ -19,7 +19,10 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "predictiveBackGestureEnabled": false,
-      "package": "in.clanfitness.app"
+      "package": "in.clanfitness.app",
+      "permissions": [
+        "android.permission.health.READ_STEPS"
+      ]
     },
     "web": {
       "output": "static",
@@ -76,6 +79,15 @@
               "./assets/fonts/Satoshi-Bold.ttf",
               "./assets/fonts/Satoshi-Black.ttf"
             ]
+          }
+        }
+      ],
+      "react-native-health-connect",
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "minSdkVersion": 26
           }
         }
       ]
