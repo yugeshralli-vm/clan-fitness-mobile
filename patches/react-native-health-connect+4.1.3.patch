@@ -1,0 +1,35 @@
+diff --git a/node_modules/react-native-health-connect/android-expo/src/main/java/expo/modules/healthconnect/HealthConnectPermissionReactActivityHandler.kt b/node_modules/react-native-health-connect/android-expo/src/main/java/expo/modules/healthconnect/HealthConnectPermissionReactActivityHandler.kt
+index 28ff058..f00d142 100644
+--- a/node_modules/react-native-health-connect/android-expo/src/main/java/expo/modules/healthconnect/HealthConnectPermissionReactActivityHandler.kt
++++ b/node_modules/react-native-health-connect/android-expo/src/main/java/expo/modules/healthconnect/HealthConnectPermissionReactActivityHandler.kt
+@@ -10,6 +10,11 @@ class HealthConnectPermissionReactActivityHandler : ReactActivityLifecycleListen
+   override fun onCreate(activity: Activity?, savedInstanceState: Bundle?) {
+     super.onCreate(activity, savedInstanceState)
+     val reactActivity = activity as? ReactActivity ?: return
++    // Health Connect's privacy-policy link launches a second activity instance that finishes at
++    // once; registering on it would leave the delegate pointing at a destroyed activity.
++    val action = reactActivity.intent?.action
++    if (action == "androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE" ||
++      action == "android.intent.action.VIEW_PERMISSION_USAGE") return
+     HealthConnectPermissionDelegate.setPermissionDelegate(reactActivity)
+   }
+ }
+diff --git a/node_modules/react-native-health-connect/android/src/main/java/dev/matinzd/healthconnect/HealthConnectManager.kt b/node_modules/react-native-health-connect/android/src/main/java/dev/matinzd/healthconnect/HealthConnectManager.kt
+index 40539fe..7578ddf 100644
+--- a/node_modules/react-native-health-connect/android/src/main/java/dev/matinzd/healthconnect/HealthConnectManager.kt
++++ b/node_modules/react-native-health-connect/android/src/main/java/dev/matinzd/healthconnect/HealthConnectManager.kt
+@@ -69,8 +69,12 @@ class HealthConnectManager(private val applicationContext: ReactApplicationConte
+   ) {
+     throwUnlessClientIsAvailable(promise) {
+       coroutineScope.launch {
+-        val granted = HealthConnectPermissionDelegate.launchPermissionsDialog(PermissionUtils.parsePermissions(reactPermissions))
+-        promise.resolve(PermissionUtils.mapPermissionResult(granted))
++        try {
++          val granted = HealthConnectPermissionDelegate.launchPermissionsDialog(PermissionUtils.parsePermissions(reactPermissions))
++          promise.resolve(PermissionUtils.mapPermissionResult(granted))
++        } catch (e: Exception) {
++          promise.rejectWithException(e)
++        }
+       }
+     }
+   }
