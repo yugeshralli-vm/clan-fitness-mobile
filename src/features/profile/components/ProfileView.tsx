@@ -1,5 +1,5 @@
 import { useFocusEffect } from "expo-router";
-import { useCallback, useState, type ReactNode } from "react";
+import { useCallback, useState } from "react";
 import { ActivityIndicator, RefreshControl, ScrollView, View } from "react-native";
 import { Avatar } from "@/components/shared/Avatar";
 import { OnlineAvatar } from "@/components/shared/OnlineAvatar";
@@ -11,13 +11,14 @@ import type { ProfileResponse } from "../types";
 import { ActivityHeatmap } from "./ActivityHeatmap";
 import { HistorySection } from "./HistorySection";
 import { LevelSummary } from "./LevelSummary";
+import { ProfileSettingsSheet } from "./ProfileSettingsSheet";
 
 /**
  * Port of the web profile pages — /profile for yourself (with the level summary) and
  * /members/[userId] for a clanmate: avatar, name and bio, this month's activity, and history.
- * `headerAction` sits at the right of the name row (the web's settings gear); `footer` below.
+ * Your own adds "Edit profile" (goals, details, settings) at the right of the name row, like the web.
  */
-export function ProfileView({ userId, headerAction, footer }: { userId: string; headerAction?: ReactNode; footer?: ReactNode }) {
+export function ProfileView({ userId }: { userId: string }) {
   const getToken = useApiToken();
   const [profile, setProfile] = useState<ProfileResponse | null>(null);
   const [loadedAt, setLoadedAt] = useState(0);
@@ -73,7 +74,7 @@ export function ProfileView({ userId, headerAction, footer }: { userId: string; 
                 </Text>
               )}
             </View>
-            {headerAction}
+            {current.isMe && <ProfileSettingsSheet profile={current} onSaved={load} />}
           </View>
 
           {current.levelProgress && <LevelSummary userId={current.user.id} progress={current.levelProgress} />}
@@ -82,7 +83,6 @@ export function ProfileView({ userId, headerAction, footer }: { userId: string; 
           <HistorySection key={loadedAt} userId={current.user.id} timezone={current.user.timezone} initial={current.history} />
         </>
       )}
-      {footer}
     </ScrollView>
   );
 }

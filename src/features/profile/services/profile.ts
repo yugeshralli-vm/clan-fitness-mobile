@@ -20,3 +20,20 @@ export function saveGoals(getToken: GetToken, gymDaysPerWeek: number, stepsPerDa
     body: JSON.stringify({ gymDaysPerWeek, stepsPerDay }),
   });
 }
+
+export type ProfileDetailsInput = {
+  unitsPreference: "metric" | "imperial";
+  height: number | null;
+  weight: number | null;
+  dateOfBirth: string | null;
+  gender: string | null;
+  bio: string | null;
+};
+
+export function saveDetails(getToken: GetToken, details: ProfileDetailsInput) {
+  return apiFetch<{ saved: true }>("/api/v1/me/details", getToken, { method: "PUT", body: JSON.stringify(details) });
+}
+
+export function savePreferences(getToken: GetToken, preferences: NonNullable<ProfileResponse["notificationPreferences"]>) {
+  return apiFetch<unknown>("/api/v1/me/notification-preferences", getToken, { method: "PUT", body: JSON.stringify(preferences) });
+}
