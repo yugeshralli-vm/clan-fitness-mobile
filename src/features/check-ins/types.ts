@@ -19,5 +19,7 @@ export type LogCheckInRequest = {
   stepsCount?: number;
   foodStatus?: FoodStatus;
   foodNote?: string;
+  /** The day's full photo list — today's kept ones plus new uploads. */
+  photoUrls?: string[];
   thought?: string;
 };
