@@ -27,11 +27,7 @@ Graphics are in [`graphics/`](graphics/); phone screenshots (1080 × 2160, from 
 Log gym, steps and food with a small clan who notices when you skip.
 ```
 
-**Full description** (4,000 max).
-
-> ⚠️ **Play listings must match what the app does.** Lines marked with ⏳ describe features the
-> Android app doesn't have yet (they work on the web/PWA). Remove those lines until the phase that
-> adds them ships: social (reacting, commenting, chat), clans (nudges, weekly recap), contracts.
+**Full description** (4,000 max). Everything below works in the Android app as of 1.1.0.
 
 ```
 Clan Fitness is fitness accountability with your people. Join a small clan of friends, log your day in under a minute, and see who showed up.
@@ -39,21 +35,26 @@ Clan Fitness is fitness accountability with your people. Join a small clan of fr
 LOG YOUR DAY
 • Gym: mark your workout and add a note (push day, 5k run, leg day).
 • Steps: fill them in from Health Connect, or type them in.
-• Food: hit it, missed it, or partial, with an optional note (⏳ and photos).
+• Food: hit it, missed it, or partial, with an optional note and up to 3 meal photos.
 • A thought for the day, if you have one.
 Your weekly gym ring, streak and steps-to-goal sit at the top, so you always know where you stand.
 
 YOUR CLAN SEES IT
-• A shared feed of everyone's check-ins, grouped by day.
-• ⏳ React with 🔥 👏 👎 and comment on each other's days.
-• ⏳ Weekly recap: the Top 3 and the Wall of Shame.
-• ⏳ Nudge the members who haven't logged yet.
+• A live feed of everyone's check-ins, grouped by day.
+• React with 🔥 👏 👎 and comment on each other's days, with @mentions.
+• Clan chat with replies, reactions and who's online.
+• Weekly recap: the Top 3 and the Wall of Shame.
+• Leaderboards for today, yesterday, the week and the month.
+• Nudge the members who haven't logged yet.
+
+LEVEL UP
+Claim daily contracts, like 10k steps, beat your average, or a duel against a random clanmate, and earn points toward your level.
 
 STEPS FROM HEALTH CONNECT
 Connect Health Connect and today's steps from Google Fit, Samsung Health, Fitbit and other apps are filled in on your Log screen. Nothing is posted to your clan until you tap Save.
 
-⏳ LEVEL UP
-Claim daily contracts, like 10k steps, beat your average, or a duel against a random clanmate, and earn points toward your level.
+NOTIFICATIONS
+Get notified when someone comments, mentions you, reacts or nudges you. Choose which ones in Settings.
 
 PRIVATE BY DESIGN
 Your check-ins are shared only with the clans you join. No ads. Your data is never sold. Delete your account any time from your profile.
