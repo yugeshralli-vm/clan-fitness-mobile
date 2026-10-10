@@ -93,7 +93,37 @@
         }
       ],
       "./plugins/withHealthConnectPrivacyPolicy",
-      "./plugins/withReleaseSigning"
+      "./plugins/withReleaseSigning",
+      [
+        "@react-native-community/datetimepicker",
+        {
+          "android": {
+            "datePicker": {
+              "colorAccent": {
+                "light": "#3bffad"
+              },
+              "windowBackground": {
+                "light": "#121212"
+              },
+              "textColor": {
+                "light": "#e6e6e6"
+              },
+              "textColorPrimary": {
+                "light": "#e6e6e6"
+              },
+              "textColorSecondary": {
+                "light": "#808080"
+              },
+              "textColorPrimaryInverse": {
+                "light": "#0d0d0d"
+              },
+              "textColorSecondaryInverse": {
+                "light": "#0d0d0d"
+              }
+            }
+          }
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,

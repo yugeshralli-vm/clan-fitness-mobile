@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { View } from "react-native";
 import { Button } from "@/components/ui/Button";
+import { DateField } from "@/components/ui/DateField";
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
 import { Text } from "@/components/ui/Text";
@@ -28,7 +29,7 @@ const toNumber = (value: string) => (value.trim() ? Number(value) : null);
 
 /**
  * Port of the web ProfileDetailsForm: units, height, weight (in the chosen units), date of birth,
- * gender and bio. Date of birth is typed as YYYY-MM-DD — the web's date input.
+ * gender and bio. Date of birth opens Android's calendar, the web's date input.
  */
 export function ProfileDetailsForm({ details, onSaved }: { details: NonNullable<ProfileResponse["details"]>; onSaved: () => void }) {
   const getToken = useApiToken();
@@ -78,7 +79,7 @@ export function ProfileDetailsForm({ details, onSaved }: { details: NonNullable<
       </View>
       <View className="gap-2">
         <Text className="text-sm font-medium">Date of birth</Text>
-        <Input value={dateOfBirth} onChangeText={setDateOfBirth} placeholder="YYYY-MM-DD" keyboardType="numbers-and-punctuation" maxLength={10} />
+        <DateField value={dateOfBirth} onChange={setDateOfBirth} maximumDate={new Date()} />
       </View>
       <View className="gap-2">
         <Text className="text-sm font-medium">Gender</Text>
