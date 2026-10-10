@@ -3,6 +3,7 @@ import { useRouter } from "expo-router";
 import { ArrowLeft } from "lucide-react-native";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ActivityIndicator, Pressable, ScrollView, View } from "react-native";
+import { celebrate as celebrateReward } from "@/components/ui/RewardSnackbar";
 import { Text } from "@/components/ui/Text";
 import { useActiveClan } from "@/features/clans";
 import { useRealtime } from "@/features/realtime";
@@ -23,8 +24,8 @@ const TIER_TITLE: Record<ContractTier, string> = { 1: "Noob", 2: "Veteran", 3: "
 /**
  * Port of the web contracts page (/clans/[clanId]/contracts): today's board by tier (Noob, Veteran,
  * Legend), two cards a row. Live while open — progress depends on check-ins, comments, reactions
- * and chat, not just claims. Your own completions get the web's "Contract complete" celebration
- * (as a toast), once per claim.
+ * and chat, not just claims. Your own completions get the web's "Contract complete" celebration,
+ * once per claim.
  */
 export function ContractsScreen({ clanId }: { clanId: string }) {
   const getToken = useApiToken();
@@ -47,7 +48,7 @@ export function ContractsScreen({ clanId }: { clanId: string }) {
       if (celebratedRef.current.has(claimId)) return;
       celebratedRef.current.add(claimId);
       saveCelebrated(userId, celebratedRef.current);
-      toast(`Contract complete — ${title} +${points}`);
+      celebrateReward.contractComplete(title, points);
     },
     [userId],
   );
@@ -90,7 +91,7 @@ export function ContractsScreen({ clanId }: { clanId: string }) {
       const result = await claimContract(getToken, clanId, contractId);
       setBoard(result.board);
       const opponentName = result.board.find((entry) => entry.contract.id === contractId)?.claim?.opponentName;
-      if (opponentName) toast(`Duel matched! You vs ${opponentName}`);
+      if (opponentName) celebrateReward.duelMatched(opponentName);
       if (result.justCompleted) {
         setLiveCompletedIds((prev) => new Set(prev).add(contractId));
         celebrate(result.justCompleted.claimId, result.justCompleted.title, result.justCompleted.points);

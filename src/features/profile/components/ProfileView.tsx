@@ -76,7 +76,7 @@ export function ProfileView({ userId, headerAction, footer }: { userId: string; 
             {headerAction}
           </View>
 
-          {current.levelProgress && <LevelSummary progress={current.levelProgress} />}
+          {current.levelProgress && <LevelSummary userId={current.user.id} progress={current.levelProgress} />}
           <ActivityHeatmap days={current.heatmap} />
           {/* Re-seeded on every load, so a refresh shows new logs under the default filters. */}
           <HistorySection key={loadedAt} userId={current.user.id} timezone={current.user.timezone} initial={current.history} />

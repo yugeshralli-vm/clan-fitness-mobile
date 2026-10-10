@@ -3,6 +3,7 @@ import { useEffect, type ReactNode } from "react";
 import { View } from "react-native";
 import { AppHeader } from "@/components/shared/AppHeader";
 import { BottomNav } from "@/components/shared/BottomNav";
+import { RewardSnackbar } from "@/components/ui/RewardSnackbar";
 import { ActiveClanProvider, useActiveClan } from "@/features/clans";
 import { HealthStepsProvider } from "@/features/health";
 import { RealtimeProvider } from "@/features/realtime";
@@ -52,6 +53,7 @@ export default function AppTabsLayout() {
                 <Tabs.Screen name="onboarding" options={{ href: null }} />
               </Tabs>
             </OnboardingGate>
+            <RewardSnackbar />
           </View>
         </HealthStepsProvider>
       </ActiveClanProvider>
