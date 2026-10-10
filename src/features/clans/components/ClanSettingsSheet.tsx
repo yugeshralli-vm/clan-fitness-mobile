@@ -1,21 +1,16 @@
 import { RefreshCw, Settings } from "lucide-react-native";
 import { useState } from "react";
-import { Platform, Pressable, Share, ToastAndroid, View } from "react-native";
+import { Pressable, View } from "react-native";
 import { BottomSheet } from "@/components/ui/BottomSheet";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Text } from "@/components/ui/Text";
 import { useApiToken } from "@/hooks/useApiToken";
 import { apiErrorMessage } from "@/lib/api-error";
+import { toast } from "@/lib/toast";
 import { colors } from "@/styles/tokens";
 import { deleteClan, regenerateInviteCode, renameClan } from "../services/clans";
-
-const WEB_ORIGIN = process.env.EXPO_PUBLIC_API_BASE_URL;
-
-/** The web's success toast (useActionToast) — Android's own toast here. */
-function toast(message: string) {
-  if (Platform.OS === "android") ToastAndroid.show(message, ToastAndroid.SHORT);
-}
+import { ShareInviteButton } from "./ShareInviteButton";
 
 /**
  * Port of the web ClanSettingsSheet (admin only): the gear opens "Clan settings" with the invite
@@ -56,11 +51,6 @@ export function ClanSettingsSheet({
     setOpen(true);
   }
 
-  // The native share sheet — what the web shows when navigator.share exists (it does on Android).
-  function handleShare() {
-    const url = `${WEB_ORIGIN}/join?code=${inviteCode}`;
-    Share.share({ title: "Clan Fitness invite", message: `Join my clan "${clanName}" on Clan Fitness! ${url}` }).catch(() => {});
-  }
 
   async function handleRegenerate() {
     setRegenerating(true);
@@ -115,7 +105,7 @@ export function ClanSettingsSheet({
               Invite code: <Text style={{ fontFamily: "monospace" }} className="text-sm">{inviteCode}</Text>
             </Text>
             <View className="flex-row items-center gap-2">
-              <Button variant="secondary" title="Share invite" onPress={handleShare} />
+              <ShareInviteButton inviteCode={inviteCode} clanName={clanName} />
               <Button
                 variant="secondary"
                 icon={RefreshCw}
