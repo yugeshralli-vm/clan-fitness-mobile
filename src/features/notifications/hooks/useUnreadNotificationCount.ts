@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { useRealtime } from "@/features/realtime";
 import { useApiToken } from "@/hooks/useApiToken";
 import { getUnreadNotificationCount } from "../services/notifications";
 
@@ -17,6 +18,9 @@ export function useUnreadNotificationCount() {
   useEffect(() => {
     refresh();
   }, [refresh]);
+
+  // The badge updates the moment a notification is created, like the web bell.
+  useRealtime({ events: ["notifications"], onChange: refresh });
 
   return { count, refresh };
 }

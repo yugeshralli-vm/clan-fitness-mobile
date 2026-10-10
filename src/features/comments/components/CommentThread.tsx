@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import { ActivityIndicator, Pressable, View } from "react-native";
-import { Avatar } from "@/components/shared/Avatar";
+import { OnlineAvatar } from "@/components/shared/OnlineAvatar";
 import { MentionInput, type MentionInputHandle, type MentionMember } from "@/components/shared/MentionInput";
 import { Text } from "@/components/ui/Text";
 import { useApiToken } from "@/hooks/useApiToken";
@@ -73,7 +73,7 @@ export function CommentThread({
         <View className="gap-2">
           {comments.map((comment) => (
             <View key={comment.id} className="min-w-0 flex-row items-start gap-2">
-              <Avatar name={comment.user.name} avatarUrl={comment.user.avatarUrl} size={24} />
+              <OnlineAvatar userId={comment.user.id} name={comment.user.name} avatarUrl={comment.user.avatarUrl} size={24} />
               <Text className="min-w-0 flex-1 text-sm text-foregroundSecondary">
                 <Text className="text-sm font-semibold">{comment.user.name}</Text>{" "}
                 {parseCommentSegments(comment.text).map((segment, i) =>
