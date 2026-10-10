@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { View } from "react-native";
-import { Avatar } from "@/components/shared/Avatar";
+import { OnlineAvatar } from "@/components/shared/OnlineAvatar";
 import { LevelBadge } from "@/components/shared/LevelBadge";
 import { PhotoCarousel } from "@/components/ui/PhotoCarousel";
 import { Text } from "@/components/ui/Text";
@@ -27,7 +27,7 @@ export function FeedCard({ card, clanId }: { card: FeedCardData; clanId: string 
   const others = card.entries.filter((entry) => entry.type !== "thought");
   return (
     <View className="flex-row items-start gap-3 rounded-lg border border-surfaceBorder bg-surface p-3">
-      <Avatar name={card.user.name} avatarUrl={card.user.avatarUrl} />
+      <OnlineAvatar userId={card.user.id} name={card.user.name} avatarUrl={card.user.avatarUrl} />
       <View className="min-w-0 flex-1 gap-2">
         <View className="flex-row items-center justify-between gap-2">
           <View className="min-w-0 shrink flex-row items-center gap-1.5">

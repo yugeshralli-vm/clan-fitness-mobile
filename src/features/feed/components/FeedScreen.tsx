@@ -1,6 +1,7 @@
 import { ActivityIndicator, Pressable, RefreshControl, SectionList, View } from "react-native";
 import { Text } from "@/components/ui/Text";
 import { useActiveClan } from "@/features/clans";
+import { useRealtime } from "@/features/realtime";
 import { colors } from "@/styles/tokens";
 import { useClanFeed } from "../hooks/useClanFeed";
 import { FeedCard } from "./FeedCard";
@@ -13,7 +14,9 @@ import { FeedSectionHeader } from "./FeedSectionHeader";
  */
 export function FeedScreen() {
   const { activeClan, clans, loading: clanLoading, error: clanError } = useActiveClan();
-  const { sections, hasMore, loading, loadingMore, error, refresh, loadMore } = useClanFeed(activeClan?.id ?? null);
+  const { sections, hasMore, loading, loadingMore, error, refresh, silentRefresh, loadMore } = useClanFeed(activeClan?.id ?? null);
+  // New check-ins, edits, comments and reactions from clanmates appear without a pull-to-refresh.
+  useRealtime({ events: ["feed_post", "feed_engagement"], clanId: activeClan?.id, onChange: silentRefresh });
 
   if (clanLoading && !activeClan) {
     return (
