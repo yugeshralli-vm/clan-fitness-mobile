@@ -6,6 +6,7 @@ import { BottomNav } from "@/components/shared/BottomNav";
 import { RewardSnackbar } from "@/components/ui/RewardSnackbar";
 import { ActiveClanProvider, useActiveClan } from "@/features/clans";
 import { HealthStepsProvider } from "@/features/health";
+import { usePushSetup } from "@/features/push";
 import { RealtimeProvider } from "@/features/realtime";
 import { useKeyboardHeight } from "@/hooks/useKeyboardHeight";
 import { colors } from "@/styles/tokens";

@@ -23,7 +23,12 @@
       "permissions": [
         "android.permission.health.READ_STEPS"
       ],
-      "versionCode": 3
+      "versionCode": 3,
+      "googleServicesFile": "./google-services.json",
+      "blockedPermissions": [
+        "android.permission.SYSTEM_ALERT_WINDOW",
+        "android.permission.WRITE_EXTERNAL_STORAGE"
+      ]
     },
     "web": {
       "output": "static",
@@ -89,6 +94,14 @@
           "photosPermission": "Clan Fitness uses your photos so you can add meal photos to your daily log.",
           "cameraPermission": "Clan Fitness uses the camera so you can take meal photos for your daily log.",
           "microphonePermission": false
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/android-icon-monochrome.png",
+          "color": "#3bffad",
+          "defaultChannel": "default"
         }
       ],
       "react-native-health-connect",

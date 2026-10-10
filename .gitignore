@@ -42,3 +42,6 @@ example
 # generated native folders
 /ios
 /android
+
+# Firebase config for push notifications — kept out of the repo, like the signing key.
+google-services.json
