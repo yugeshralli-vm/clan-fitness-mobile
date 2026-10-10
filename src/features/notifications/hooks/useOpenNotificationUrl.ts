@@ -28,7 +28,8 @@ export function useOpenNotificationUrl() {
         if (clans.some((c) => c.id === clan[1])) setActiveClanId(clan[1]);
         const page = clan[2];
         if (page === "chat") return router.navigate("/chat");
-        if (page === "manage" || page === "contracts") return router.navigate("/clan");
+        if (page === "contracts") return router.navigate({ pathname: "/clans/[clanId]/contracts", params: { clanId: clan[1] } });
+        if (page === "manage") return router.navigate("/clan");
         // The feed scrolls to and briefly highlights the card it's about, like the web's ?checkIn=.
         return router.navigate(checkInId ? { pathname: "/", params: { checkIn: checkInId } } : "/");
       }

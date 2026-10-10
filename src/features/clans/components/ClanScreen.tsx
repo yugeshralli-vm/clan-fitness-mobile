@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { ActivityIndicator, RefreshControl, ScrollView, View } from "react-native";
 import { Tabs } from "@/components/ui/Tabs";
 import { Text } from "@/components/ui/Text";
+import { ContractsCard } from "@/features/contracts";
 import { useOpenProfile } from "@/features/profile";
 import { useApiToken } from "@/hooks/useApiToken";
 import { colors } from "@/styles/tokens";
@@ -115,6 +116,8 @@ export function ClanScreen() {
           </View>
         )}
       </View>
+
+      <ContractsCard clanId={activeClan.id} />
 
       {error && <Text className="text-sm text-danger">{error}</Text>}
 

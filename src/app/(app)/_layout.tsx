@@ -43,14 +43,12 @@ export default function AppTabsLayout() {
                 <Tabs.Screen name="log" />
                 <Tabs.Screen name="chat" />
                 <Tabs.Screen name="profile" />
-                {/* Not a tab (BottomNav only draws the five above): a clanmate's profile. */}
+                {/* Not tabs (BottomNav only draws the five above): pages opened from them. */}
                 <Tabs.Screen name="members/[userId]" options={{ href: null }} />
                 <Tabs.Screen name="clans/new" options={{ href: null }} />
                 <Tabs.Screen name="clans/join" options={{ href: null }} />
-                <Tabs.Screen
-                  name="clans/[clanId]/welcome"
-                  options={{ href: null }}
-                />
+                <Tabs.Screen name="clans/[clanId]/welcome" options={{ href: null }} />
+                <Tabs.Screen name="clans/[clanId]/contracts" options={{ href: null }} />
                 <Tabs.Screen name="onboarding" options={{ href: null }} />
               </Tabs>
             </OnboardingGate>
