@@ -5,16 +5,20 @@ import { BottomNav } from "@/components/shared/BottomNav";
 import { ActiveClanProvider } from "@/features/clans";
 import { HealthStepsProvider } from "@/features/health";
 import { RealtimeProvider } from "@/features/realtime";
+import { useKeyboardHeight } from "@/hooks/useKeyboardHeight";
 import { colors } from "@/styles/tokens";
 
 // Same shell as the web app's (app)/layout.tsx: header on top, tab content, BottomNav below —
-// tab order Feed/Clan/Log/Chat/Profile, with Log as the raised center action.
+// tab order Feed/Clan/Log/Chat/Profile, with Log as the raised center action. While the keyboard
+// is open the whole shell sits above it, nav included — what the browser's viewport resize does
+// for the PWA (Android's edge-to-edge mode no longer resizes the window for us).
 export default function AppTabsLayout() {
+  const keyboardHeight = useKeyboardHeight();
   return (
     <RealtimeProvider>
       <ActiveClanProvider>
         <HealthStepsProvider>
-          <View className="flex-1 bg-background">
+          <View className="flex-1 bg-background" style={{ paddingBottom: keyboardHeight }}>
             <AppHeader />
             <Tabs
               tabBar={(props) => <BottomNav {...props} />}

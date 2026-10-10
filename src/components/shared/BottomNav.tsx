@@ -1,30 +1,42 @@
+import { useUser } from "@clerk/expo";
 import type { Tabs } from "expo-router";
 import type { ComponentProps } from "react";
 import { Activity, MessageSquare, Plus, Shield, User, type LucideIcon } from "lucide-react-native";
 import { Pressable, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Text } from "@/components/ui/Text";
+import { useChatUnread } from "@/features/chat";
+import { useActiveClan } from "@/features/clans";
+import { useKeyboardHeight } from "@/hooks/useKeyboardHeight";
 import { colors } from "@/styles/tokens";
 
 // expo-router bundles React Navigation internally, so the tab bar's props type is read off Tabs.
 type BottomTabBarProps = Parameters<NonNullable<ComponentProps<typeof Tabs>["tabBar"]>>[0];
 
-const ITEMS: Record<string, { label: string; icon: LucideIcon; emphasize?: boolean }> = {
+const ITEMS: Record<string, { label: string; icon: LucideIcon; emphasize?: boolean; unreadDot?: "chat" }> = {
   index: { label: "Feed", icon: Activity },
   clan: { label: "Clan", icon: Shield },
   log: { label: "Log", icon: Plus, emphasize: true },
-  chat: { label: "Chat", icon: MessageSquare },
+  chat: { label: "Chat", icon: MessageSquare, unreadDot: "chat" },
   profile: { label: "Profile", icon: User },
 };
 
 /**
  * Port of the web BottomNav: five equal items on surface with a top border; the active one in
  * accent with a heavier icon stroke, and Log as a raised 56px accent circle sitting above the bar.
+ * Chat gets the web's red unread dot.
  */
 export function BottomNav({ state, navigation }: BottomTabBarProps) {
   const insets = useSafeAreaInsets();
+  const { user } = useUser();
+  const { activeClan } = useActiveClan();
+  const chatOpen = state.routes[state.index]?.name === "chat";
+  const chatUnread = useChatUnread(activeClan?.id, user?.id, chatOpen);
+  // The shell already sits above an open keyboard, which covers the system navigation area.
+  const keyboardOpen = useKeyboardHeight() > 0;
+
   return (
-    <View className="flex-row border-t border-surfaceBorder bg-surface" style={{ paddingBottom: insets.bottom }}>
+    <View className="flex-row border-t border-surfaceBorder bg-surface" style={{ paddingBottom: keyboardOpen ? 0 : insets.bottom }}>
       {state.routes.map((route, index) => {
         const item = ITEMS[route.name];
         if (!item) return null;
@@ -43,7 +55,12 @@ export function BottomNav({ state, navigation }: BottomTabBarProps) {
               </View>
             ) : (
               <>
-                <Icon size={22} strokeWidth={active ? 2.25 : 1.75} color={active ? colors.accent : colors.foregroundTertiary} />
+                <View className="relative">
+                  <Icon size={22} strokeWidth={active ? 2.25 : 1.75} color={active ? colors.accent : colors.foregroundTertiary} />
+                  {item.unreadDot === "chat" && chatUnread && (
+                    <View accessibilityLabel="Unread messages" className="absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full bg-danger" />
+                  )}
+                </View>
                 <Text className={`text-xs font-semibold ${active ? "text-accent" : "text-foregroundTertiary"}`}>{item.label}</Text>
               </>
             )}
