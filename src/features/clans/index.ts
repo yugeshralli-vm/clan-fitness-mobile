@@ -1,4 +1,5 @@
 export { ActiveClanProvider, useActiveClan } from "./ActiveClanProvider";
+export { ClanScreen } from "./components/ClanScreen";
 export { ClanSwitcher } from "./components/ClanSwitcher";
 export { useClanMembers } from "./hooks/useClanMembers";
 export type { Clan, ClanMember, ClansResponse } from "./types";
