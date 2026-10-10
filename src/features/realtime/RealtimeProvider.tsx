@@ -12,6 +12,10 @@ import { getRealtimeToken } from "./services/token";
 const MAX_RECONNECT_DELAY_MS = 30_000;
 /** Coalesces bursts (one check-in fans out to several clans + a notification each) into one refetch. */
 const COALESCE_MS = 250;
+/** How often the composer re-announces "still typing" — well under TYPING_VISIBLE_MS (same as web). */
+const TYPING_SEND_INTERVAL_MS = 2500;
+/** How long someone shows as typing after their last ping. */
+const TYPING_VISIBLE_MS = 4000;
 
 export type RealtimeFrame =
   | { type: "changed"; event: RealtimeEvent; clanId?: string; actor?: string; data?: unknown }
@@ -266,7 +270,64 @@ export function usePresence(clanId: string): readonly string[] | null {
   return useContext(RealtimeContext)?.presence.get(clanId) ?? null;
 }
 
-/** Low-level access for chat's typing indicator (subscribeTyping/sendTyping). */
-export function useRealtimeContext() {
-  return useContext(RealtimeContext);
+/**
+ * Who else is typing in `clanId`'s chat, plus `notifyTyping` to call on every keystroke (it
+ * throttles itself). Someone drops off after TYPING_VISIBLE_MS without a ping, or as soon as their
+ * message lands. Port of the web hook.
+ */
+export function useTypingIndicator(clanId: string | undefined, currentUserId: string | undefined) {
+  const ctx = useContext(RealtimeContext);
+  const [typing, setTyping] = useState<ReadonlyMap<string, number>>(() => new Map());
+  const lastSentRef = useRef(0);
+  const subscribeTyping = ctx?.subscribeTyping;
+  const subscribe = ctx?.subscribe;
+  const sendTyping = ctx?.sendTyping;
+
+  useEffect(() => {
+    if (!subscribeTyping || !subscribe || !clanId) return;
+    const unsubscribeTyping = subscribeTyping((frameClanId, userId) => {
+      if (frameClanId !== clanId || userId === currentUserId) return;
+      setTyping((prev) => new Map(prev).set(userId, Date.now() + TYPING_VISIBLE_MS));
+    });
+    const unsubscribeChanges = subscribe((frame) => {
+      if (frame.type !== "changed" || frame.event !== "chat_message" || frame.clanId !== clanId || !frame.actor) return;
+      const actor = frame.actor;
+      setTyping((prev) => {
+        if (!prev.has(actor)) return prev;
+        const next = new Map(prev);
+        next.delete(actor);
+        return next;
+      });
+    });
+    return () => {
+      unsubscribeTyping();
+      unsubscribeChanges();
+      setTyping(new Map());
+    };
+  }, [subscribeTyping, subscribe, clanId, currentUserId]);
+
+  // Expire stale entries — scheduled for the soonest expiry rather than ticking on an interval.
+  useEffect(() => {
+    if (typing.size === 0) return;
+    const soonest = Math.min(...typing.values());
+    const timeout = setTimeout(
+      () => setTyping((prev) => new Map([...prev].filter(([, expiresAt]) => expiresAt > Date.now()))),
+      Math.max(0, soonest - Date.now()),
+    );
+    return () => clearTimeout(timeout);
+  }, [typing]);
+
+  const notifyTyping = useCallback(() => {
+    const now = Date.now();
+    if (!clanId || now - lastSentRef.current < TYPING_SEND_INTERVAL_MS) return;
+    lastSentRef.current = now;
+    sendTyping?.(clanId);
+  }, [clanId, sendTyping]);
+
+  /** Call after sending, so the next keystroke announces typing again right away. */
+  const resetTyping = useCallback(() => {
+    lastSentRef.current = 0;
+  }, []);
+
+  return { typingUserIds: [...typing.keys()], notifyTyping, resetTyping };
 }
