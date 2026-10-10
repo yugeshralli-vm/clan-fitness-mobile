@@ -2,7 +2,7 @@
   "expo": {
     "name": "Clan Fitness",
     "slug": "clan-fitness-mobile",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "clanfitnessmobile",
@@ -23,7 +23,7 @@
       "permissions": [
         "android.permission.health.READ_STEPS"
       ],
-      "versionCode": 3,
+      "versionCode": 4,
       "googleServicesFile": "./google-services.json",
       "blockedPermissions": [
         "android.permission.SYSTEM_ALERT_WINDOW",
