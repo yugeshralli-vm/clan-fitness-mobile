@@ -1,5 +1,6 @@
 import * as Notifications from "expo-notifications";
 import { useEffect } from "react";
+import { AppState } from "react-native";
 import { useOpenNotificationUrl } from "@/features/notifications";
 import { useApiToken } from "@/hooks/useApiToken";
 import { enablePush, getPermission, isTurnedOff, markPrompted, wasPrompted } from "./services/push";
@@ -26,9 +27,13 @@ export function usePushSetup() {
       const [permission, turnedOff, prompted] = await Promise.all([getPermission(), isTurnedOff(), wasPrompted()]);
       // Re-registered on every launch while on: cheap, and retries a registration that failed.
       if (permission === "granted" && !turnedOff) await enablePush(getToken);
-      else if (permission === "undetermined" && !prompted) {
-        markPrompted();
+      else if (permission === "undetermined" && !prompted && !turnedOff) {
+        // Android ignores a permission request from an app that isn't in front (e.g. still
+        // returning from Google sign-in in the browser), so wait until it is.
+        while (AppState.currentState !== "active") await new Promise((resolve) => setTimeout(resolve, 500));
         await enablePush(getToken);
+        // Only counts as asked once Android actually recorded an answer.
+        if ((await getPermission()) !== "undetermined") markPrompted();
       }
     })().catch(() => {});
 

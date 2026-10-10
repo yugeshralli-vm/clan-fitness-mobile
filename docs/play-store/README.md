@@ -2,8 +2,6 @@
 
 Everything to paste into Play Console for **Clan Fitness** (`com.clan.fitness`). The answers
 describe what the Android app actually does as of this commit. **Update them when it changes.**
-Before adding push notifications, re-check the Data safety section: push tokens count as
-"Device or other IDs".
 
 Graphics are in [`graphics/`](graphics/); phone screenshots (1080 × 2160, from the demo clan) are in [`screenshots/`](screenshots/).
 
@@ -165,8 +163,13 @@ Expect a teen-or-older rating with a "Users Interact" descriptor.
 | Messages › Other in-app messages (clan chat, comments) | Optional | App functionality |
 | Photos and videos › Photos (food photos, profile photo) | Optional | App functionality |
 | App activity › Other user-generated content (notes, daily thoughts, reactions) | Optional | App functionality |
+| Device or other IDs (Firebase Cloud Messaging push token) | Optional | App functionality (push notifications) |
 
-**Not collected by the Android app:** location, contacts, financial info, web browsing, audio, files, calendar, device or other IDs, app info and performance (no crash reporting or analytics SDK in the app).
+Push tokens go to Firebase Cloud Messaging (Google) only to deliver notifications; that's a service provider, not sharing.
+
+**Not collected by the Android app:** location, contacts, financial info, web browsing, audio, files, calendar, app info and performance (no crash reporting or analytics SDK in the app).
+
+**Permissions the app requests:** Health Connect steps (read), camera (meal photos, only when you tap Take photo), notifications (Android 13+). Photos are chosen with Android's photo picker, which needs no storage permission.
 
 ### Account deletion
 Covered by the Data safety URL above, plus in-app deletion at Profile › Delete account.
@@ -185,7 +188,9 @@ Covered by the Data safety URL above, plus in-app deletion at Profile › Delete
    To build a release:
    1. Bump `expo.android.versionCode` in app.json (and `version` for a user-visible change). Play
       rejects a versionCode it has seen before.
-   2. Check `.env` points at production (`EXPO_PUBLIC_API_BASE_URL=https://www.clanfitness.in`, live Clerk key).
+   2. Check `.env` points at production (`EXPO_PUBLIC_API_BASE_URL=https://www.clanfitness.in`, live Clerk key),
+      and that `google-services.json` (Firebase project `clan-fitness-93d98`, kept out of git) is in the repo root —
+      push notifications need it. Download it again from Firebase › Project settings › Your apps if missing.
    3. `CI=1 npx expo prebuild --clean --platform android && (cd android && ./gradlew bundleRelease)`
    4. Upload `android/app/build/outputs/bundle/release/app-release.aab`. On the first upload, accept
       **Play App Signing** (Google holds the app-signing key; yours is only the upload key).
