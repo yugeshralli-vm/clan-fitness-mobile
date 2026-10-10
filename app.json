@@ -23,7 +23,7 @@
       "permissions": [
         "android.permission.health.READ_STEPS"
       ],
-      "versionCode": 2
+      "versionCode": 3
     },
     "web": {
       "output": "static",

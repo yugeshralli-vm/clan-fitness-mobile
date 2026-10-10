@@ -1,7 +1,7 @@
 import { Pressable, View } from "react-native";
 import { Button } from "@/components/ui/Button";
 import { Text } from "@/components/ui/Text";
-import { openHealthConnectSettings } from "../services/health-connect";
+import { openHealthConnectInPlayStore } from "../services/health-connect";
 import { useHealthSteps } from "../HealthStepsProvider";
 
 function timeAgo(at: number) {
@@ -23,9 +23,9 @@ export function HealthStepsStatus() {
 
   if (status === "needs-update") {
     return (
-      <Pressable onPress={openHealthConnectSettings}>
+      <Pressable onPress={openHealthConnectInPlayStore}>
         <Text className="text-xs text-foregroundTertiary">
-          Update Health Connect to fill in your steps automatically.{" "}
+          Install or update Health Connect to fill in your steps automatically.{" "}
           <Text className="text-xs font-semibold text-accent">Open</Text>
         </Text>
       </Pressable>
