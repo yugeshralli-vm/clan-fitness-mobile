@@ -18,7 +18,7 @@ function formatTime(iso: string) {
  * title; one line per check-in (icon + caption, food photos below); the reaction bar and the
  * comment pill, both live.
  */
-export function FeedCard({ card, clanId }: { card: FeedCardData; clanId: string }) {
+export function FeedCard({ card, clanId, highlighted }: { card: FeedCardData; clanId: string; highlighted?: boolean }) {
   const openProfile = useOpenProfile();
   const [reactions, setReactions] = useState(card.reactions ?? {});
   const [commentCount, setCommentCount] = useState(card.commentCount);
@@ -28,7 +28,9 @@ export function FeedCard({ card, clanId }: { card: FeedCardData; clanId: string 
   const thought = card.entries.find((entry) => entry.type === "thought");
   const others = card.entries.filter((entry) => entry.type !== "thought");
   return (
-    <View className="flex-row items-start gap-3 rounded-lg border border-surfaceBorder bg-surface p-3">
+    <View
+      className={`flex-row items-start gap-3 rounded-lg border p-3 ${highlighted ? "border-accent bg-accent/10" : "border-surfaceBorder bg-surface"}`}
+    >
       <Pressable onPress={() => openProfile(card.user.id)} className="shrink-0">
         <OnlineAvatar userId={card.user.id} name={card.user.name} avatarUrl={card.user.avatarUrl} />
       </Pressable>

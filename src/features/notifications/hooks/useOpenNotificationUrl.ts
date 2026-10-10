@@ -13,7 +13,7 @@ export function useOpenNotificationUrl() {
   const { clans, setActiveClanId } = useActiveClan();
 
   return useCallback(
-    (url: string | null) => {
+    (url: string | null, checkInId?: string | null) => {
       if (!url) return;
       const path = url.split("?")[0];
       if (path === "/logs") return router.navigate("/log");
@@ -29,7 +29,8 @@ export function useOpenNotificationUrl() {
         const page = clan[2];
         if (page === "chat") return router.navigate("/chat");
         if (page === "manage" || page === "contracts") return router.navigate("/clan");
-        return router.navigate("/");
+        // The feed scrolls to and briefly highlights the card it's about, like the web's ?checkIn=.
+        return router.navigate(checkInId ? { pathname: "/", params: { checkIn: checkInId } } : "/");
       }
     },
     [router, openProfile, clans, setActiveClanId],

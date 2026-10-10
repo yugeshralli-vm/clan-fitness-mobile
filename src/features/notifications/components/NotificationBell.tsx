@@ -90,7 +90,7 @@ export function NotificationBell() {
 
   function handleItemPress(item: NotificationItem) {
     handleClose();
-    openUrl(item.url);
+    openUrl(item.url, item.checkInId);
   }
 
   const display = cleared ? 0 : count;
