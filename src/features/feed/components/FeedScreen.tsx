@@ -1,3 +1,5 @@
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { useEffect, useRef, useState } from "react";
 import { ActivityIndicator, Pressable, RefreshControl, SectionList, View } from "react-native";
 import { Text } from "@/components/ui/Text";
 import { useActiveClan } from "@/features/clans";
@@ -17,6 +19,29 @@ export function FeedScreen() {
   const { sections, hasMore, loading, loadingMore, error, refresh, silentRefresh, loadMore } = useClanFeed(activeClan?.id ?? null);
   // New check-ins, edits, comments and reactions from clanmates appear without a pull-to-refresh.
   useRealtime({ events: ["feed_post", "feed_engagement"], clanId: activeClan?.id, onChange: silentRefresh });
+
+  // Opened from a notification (?checkIn=): scroll to that card and highlight it for 2s, like the
+  // web. Only within what's loaded — the first page covers recent activity, which is what
+  // notifications are about.
+  const { checkIn } = useLocalSearchParams<{ checkIn?: string }>();
+  const router = useRouter();
+  const listRef = useRef<SectionList>(null);
+  const [highlightedCardId, setHighlightedCardId] = useState<string | null>(null);
+  useEffect(() => {
+    if (!checkIn || loading) return;
+    router.setParams({ checkIn: undefined });
+    const sectionIndex = sections.findIndex((section) => section.cards.some((card) => card.cardId === checkIn));
+    if (sectionIndex === -1) return;
+    const itemIndex = sections[sectionIndex].cards.findIndex((card) => card.cardId === checkIn);
+    setHighlightedCardId(checkIn);
+    // After layout, so the target row has been measured.
+    requestAnimationFrame(() => listRef.current?.scrollToLocation({ sectionIndex, itemIndex, viewPosition: 0.5 }));
+  }, [checkIn, loading, sections, router]);
+  useEffect(() => {
+    if (!highlightedCardId) return;
+    const timeout = setTimeout(() => setHighlightedCardId(null), 2000);
+    return () => clearTimeout(timeout);
+  }, [highlightedCardId]);
 
   if (clanLoading && !activeClan) {
     return (
@@ -42,11 +67,13 @@ export function FeedScreen() {
 
   return (
     <SectionList
+      ref={listRef}
+      onScrollToIndexFailed={() => {}}
       className="flex-1"
       contentContainerStyle={{ paddingHorizontal: 24, paddingTop: 32, paddingBottom: 32 }}
       sections={sections.map((section) => ({ ...section, data: section.cards }))}
       keyExtractor={(card) => card.cardId}
-      renderItem={({ item }) => <FeedCard card={item} clanId={activeClan.id} />}
+      renderItem={({ item }) => <FeedCard card={item} clanId={activeClan.id} highlighted={item.cardId === highlightedCardId} />}
       renderSectionHeader={({ section }) => <FeedSectionHeader dayLabel={section.dayLabel} />}
       ItemSeparatorComponent={() => <View className="h-3" />}
       renderSectionFooter={() => <View className="h-6" />}
