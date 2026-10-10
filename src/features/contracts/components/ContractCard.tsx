@@ -48,7 +48,7 @@ function DuelScoreboard({ steps }: { steps: { claimant: number; opponent: number
 /**
  * Port of the web ContractCard: artwork, tier stars, title and points, description (plus your step
  * target), then who claimed it — with a live duel scoreboard — or Claim → Cancel / Confirm, or
- * "Come back tomorrow" at the daily cap. Faded once it's already met today.
+ * "Come back tomorrow" at the daily cap. Faded, artwork in greyscale, once it's already met today.
  */
 export function ContractCard({
   entry,
@@ -70,12 +70,15 @@ export function ContractCard({
   return (
     <View className={`min-w-0 flex-1 gap-2 rounded-lg border bg-surface p-3 ${TIER_BORDER[contract.tier]} ${liveCompleted ? "opacity-55" : ""}`}>
       {!imageFailed && (
-        <Image
-          source={{ uri: `${WEB_ORIGIN}/contracts/${contract.id}.png` }}
-          onError={() => setImageFailed(true)}
-          style={{ width: "100%", aspectRatio: 1, borderRadius: 6, borderWidth: 1, borderColor: colors.surfaceBorder }}
-          contentFit="cover"
-        />
+        // Greyscale once met, like the web's `grayscale` class.
+        <View style={liveCompleted ? { filter: [{ grayscale: 1 }] } : undefined}>
+          <Image
+            source={{ uri: `${WEB_ORIGIN}/contracts/${contract.id}.png` }}
+            onError={() => setImageFailed(true)}
+            style={{ width: "100%", aspectRatio: 1, borderRadius: 6, borderWidth: 1, borderColor: colors.surfaceBorder }}
+            contentFit="cover"
+          />
+        </View>
       )}
       <View className="flex-row items-start justify-between gap-1.5">
         <View className="min-w-0 flex-1">
