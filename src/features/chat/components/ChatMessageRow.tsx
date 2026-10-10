@@ -6,6 +6,7 @@ import { LevelBadge } from "@/components/shared/LevelBadge";
 import { OnlineAvatar } from "@/components/shared/OnlineAvatar";
 import { BottomSheet } from "@/components/ui/BottomSheet";
 import { Text } from "@/components/ui/Text";
+import { useOpenProfile } from "@/features/profile";
 import { mentionsToPlainText, parseCommentSegments } from "@/lib/mentions";
 import { colors } from "@/styles/tokens";
 import { CHAT_REACTION_EMOJIS, type ClanMessage } from "../types";
@@ -38,6 +39,7 @@ export function ChatMessageRow({
   onReact: (message: ClanMessage, emoji: string) => void;
 }) {
   const { width: windowWidth } = useWindowDimensions();
+  const openProfile = useOpenProfile();
   const bubbleRef = useRef<View>(null);
   const [tray, setTray] = useState<TrayPosition | null>(null);
   const [reactorSheetOpen, setReactorSheetOpen] = useState(false);
@@ -97,13 +99,19 @@ export function ChatMessageRow({
         style={{ transform: [{ translateX: x }] }}
         className={`items-end gap-2 bg-background ${mine ? "flex-row-reverse" : "flex-row"}`}
       >
-        {!mine && <OnlineAvatar userId={message.userId} name={message.authorName} avatarUrl={message.authorAvatarUrl} size={28} />}
+        {!mine && (
+          <Pressable onPress={() => openProfile(message.userId)} className="shrink-0">
+            <OnlineAvatar userId={message.userId} name={message.authorName} avatarUrl={message.authorAvatarUrl} size={28} />
+          </Pressable>
+        )}
         <View className={`min-w-0 max-w-[75%] gap-0.5 ${mine ? "items-end" : "items-start"}`}>
           {!mine && (
             <View className="flex-row items-center gap-1 px-1">
-              <Text numberOfLines={1} className="shrink text-xs font-semibold text-foregroundTertiary">
-                {message.authorName}
-              </Text>
+              <Pressable onPress={() => openProfile(message.userId)} className="shrink">
+                <Text numberOfLines={1} className="text-xs font-semibold text-foregroundTertiary">
+                  {message.authorName}
+                </Text>
+              </Pressable>
               <LevelBadge level={message.authorLevel} />
             </View>
           )}

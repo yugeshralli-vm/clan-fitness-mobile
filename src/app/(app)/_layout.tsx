@@ -22,6 +22,8 @@ export default function AppTabsLayout() {
             <AppHeader />
             <Tabs
               tabBar={(props) => <BottomNav {...props} />}
+              // Back from a member's profile returns to wherever it was opened from.
+              backBehavior="history"
               screenOptions={{ headerShown: false, sceneStyle: { backgroundColor: colors.background } }}
             >
               <Tabs.Screen name="index" />
@@ -29,6 +31,8 @@ export default function AppTabsLayout() {
               <Tabs.Screen name="log" />
               <Tabs.Screen name="chat" />
               <Tabs.Screen name="profile" />
+              {/* Not a tab (BottomNav only draws the five above): a clanmate's profile. */}
+              <Tabs.Screen name="members/[userId]" options={{ href: null }} />
             </Tabs>
           </View>
         </HealthStepsProvider>

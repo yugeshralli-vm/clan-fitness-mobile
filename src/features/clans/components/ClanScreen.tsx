@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { ActivityIndicator, RefreshControl, ScrollView, View } from "react-native";
 import { Tabs } from "@/components/ui/Tabs";
 import { Text } from "@/components/ui/Text";
+import { useOpenProfile } from "@/features/profile";
 import { useApiToken } from "@/hooks/useApiToken";
 import { colors } from "@/styles/tokens";
 import { useActiveClan } from "../ActiveClanProvider";
@@ -21,6 +22,7 @@ import { ClanSettingsSheet } from "./ClanSettingsSheet";
 export function ClanScreen() {
   const getToken = useApiToken();
   const router = useRouter();
+  const openProfile = useOpenProfile();
   const { user } = useUser();
   const { activeClan, loading: clanLoading, refresh: refreshClans } = useActiveClan();
   const clanId = activeClan?.id;
@@ -121,7 +123,7 @@ export function ClanScreen() {
       ) : (
         <Tabs
           tabs={[
-            { id: "leaderboard", label: "Leaderboard", content: <ClanLeaderboardSection leaderboards={current.leaderboards} /> },
+            { id: "leaderboard", label: "Leaderboard", content: <ClanLeaderboardSection leaderboards={current.leaderboards} onOpenMember={openProfile} /> },
             {
               id: "members",
               label: "Members",
@@ -132,6 +134,7 @@ export function ClanScreen() {
                   currentUserId={user?.id}
                   onChanged={handleChanged}
                   onLeft={handleGone}
+                  onOpenMember={openProfile}
                 />
               ),
             },
