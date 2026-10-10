@@ -1,8 +1,9 @@
-import { Tabs } from "expo-router";
+import { Tabs, usePathname, useRouter } from "expo-router";
+import { useEffect, type ReactNode } from "react";
 import { View } from "react-native";
 import { AppHeader } from "@/components/shared/AppHeader";
 import { BottomNav } from "@/components/shared/BottomNav";
-import { ActiveClanProvider } from "@/features/clans";
+import { ActiveClanProvider, useActiveClan } from "@/features/clans";
 import { HealthStepsProvider } from "@/features/health";
 import { RealtimeProvider } from "@/features/realtime";
 import { useKeyboardHeight } from "@/hooks/useKeyboardHeight";
@@ -18,25 +19,73 @@ export default function AppTabsLayout() {
     <RealtimeProvider>
       <ActiveClanProvider>
         <HealthStepsProvider>
-          <View className="flex-1 bg-background" style={{ paddingBottom: keyboardHeight }}>
-            <AppHeader />
-            <Tabs
-              tabBar={(props) => <BottomNav {...props} />}
-              // Back from a member's profile returns to wherever it was opened from.
-              backBehavior="history"
-              screenOptions={{ headerShown: false, sceneStyle: { backgroundColor: colors.background } }}
-            >
-              <Tabs.Screen name="index" />
-              <Tabs.Screen name="clan" />
-              <Tabs.Screen name="log" />
-              <Tabs.Screen name="chat" />
-              <Tabs.Screen name="profile" />
-              {/* Not a tab (BottomNav only draws the five above): a clanmate's profile. */}
-              <Tabs.Screen name="members/[userId]" options={{ href: null }} />
-            </Tabs>
+          <View
+            className="flex-1 bg-background"
+            style={{ paddingBottom: keyboardHeight }}
+          >
+            <OnboardingGate header={<AppHeader />}>
+              <Tabs
+                tabBar={(props) =>
+                  props.state.routes[props.state.index]?.name ===
+                  "onboarding" ? null : (
+                    <BottomNav {...props} />
+                  )
+                }
+                // Back from a member's profile returns to wherever it was opened from.
+                backBehavior="history"
+                screenOptions={{
+                  headerShown: false,
+                  sceneStyle: { backgroundColor: colors.background },
+                }}
+              >
+                <Tabs.Screen name="index" />
+                <Tabs.Screen name="clan" />
+                <Tabs.Screen name="log" />
+                <Tabs.Screen name="chat" />
+                <Tabs.Screen name="profile" />
+                {/* Not a tab (BottomNav only draws the five above): a clanmate's profile. */}
+                <Tabs.Screen name="members/[userId]" options={{ href: null }} />
+                <Tabs.Screen name="clans/new" options={{ href: null }} />
+                <Tabs.Screen name="clans/join" options={{ href: null }} />
+                <Tabs.Screen
+                  name="clans/[clanId]/welcome"
+                  options={{ href: null }}
+                />
+                <Tabs.Screen name="onboarding" options={{ href: null }} />
+              </Tabs>
+            </OnboardingGate>
           </View>
         </HealthStepsProvider>
       </ActiveClanProvider>
     </RealtimeProvider>
+  );
+}
+
+/**
+ * Someone in no clan goes to onboarding, like the web layout's redirect to /onboarding — a full
+ * screen without the header or nav. Creating or joining from there navigates on by itself.
+ */
+function OnboardingGate({
+  header,
+  children,
+}: {
+  header: ReactNode;
+  children: ReactNode;
+}) {
+  const { clans, loading, error } = useActiveClan();
+  const pathname = usePathname();
+  const router = useRouter();
+  const onOnboarding = pathname === "/onboarding";
+  const noClans = !loading && !error && clans.length === 0;
+
+  useEffect(() => {
+    if (noClans && !onOnboarding) router.replace("/onboarding");
+  }, [noClans, onOnboarding, router]);
+
+  return (
+    <>
+      {!onOnboarding && header}
+      {children}
+    </>
   );
 }

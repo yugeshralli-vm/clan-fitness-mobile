@@ -13,3 +13,10 @@ export function getHistory(getToken: GetToken, userId: string, type: CheckInType
   if (before) params.set("before", before);
   return apiFetch<HistoryPage>(`${userPath(userId)}/history?${params}`, getToken);
 }
+
+export function saveGoals(getToken: GetToken, gymDaysPerWeek: number, stepsPerDay: number) {
+  return apiFetch<{ goals: { gymDaysPerWeek: number; stepsPerDay: number } }>("/api/v1/me/goals", getToken, {
+    method: "PUT",
+    body: JSON.stringify({ gymDaysPerWeek, stepsPerDay }),
+  });
+}

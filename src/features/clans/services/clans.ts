@@ -44,3 +44,14 @@ export function makeAdmin(getToken: GetToken, clanId: string, userId: string) {
 export function nudgeMember(getToken: GetToken, clanId: string, userId: string) {
   return apiFetch<{ sent: true }>(`${memberPath(clanId, userId)}/nudge`, getToken, { method: "POST" });
 }
+
+export function createClan(getToken: GetToken, name: string, description: string) {
+  return apiFetch<{ clanId: string }>("/api/v1/clans", getToken, { method: "POST", body: JSON.stringify({ name, description }) });
+}
+
+export function joinClan(getToken: GetToken, inviteCode: string) {
+  return apiFetch<{ clanId: string; alreadyMember: boolean }>("/api/v1/clans/join", getToken, {
+    method: "POST",
+    body: JSON.stringify({ inviteCode }),
+  });
+}
