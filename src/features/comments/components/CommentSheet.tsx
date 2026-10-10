@@ -1,4 +1,5 @@
 import { useUser } from "@clerk/expo";
+import type { FeedTarget } from "@/lib/feed-target";
 import { MessageCircle } from "lucide-react-native";
 import { useState } from "react";
 import { Pressable } from "react-native";
@@ -16,12 +17,12 @@ import { CommentThread } from "./CommentThread";
  * a "Comments" sheet. Comments load when the sheet opens — the feed only carries the count.
  */
 export function CommentSheet({
-  checkInId,
+  target,
   clanId,
   count,
   onCountChange,
 }: {
-  checkInId: string;
+  target: FeedTarget;
   clanId: string;
   count: number;
   onCountChange: (count: number) => void;
@@ -37,7 +38,7 @@ export function CommentSheet({
     setOpen(true);
     setLoading(true);
     try {
-      const { comments: fetched } = await getComments(getToken, checkInId, clanId);
+      const { comments: fetched } = await getComments(getToken, target, clanId);
       setComments(fetched);
       onCountChange(fetched.length);
     } catch {
@@ -65,7 +66,7 @@ export function CommentSheet({
 
       <BottomSheet open={open} onClose={() => setOpen(false)} title="Comments">
         <CommentThread
-          checkInId={checkInId}
+          target={target}
           clanId={clanId}
           comments={comments}
           loading={loading}

@@ -62,8 +62,8 @@ export function FeedCard({ card, clanId, highlighted }: { card: FeedCardData; cl
         </View>
 
         <View className="flex-row items-center gap-2">
-          <ReactionBar checkInId={card.cardId} clanId={clanId} reactions={reactions} onChange={setReactions} />
-          <CommentSheet checkInId={card.cardId} clanId={clanId} count={commentCount} onCountChange={setCommentCount} />
+          <ReactionBar target={{ checkInId: card.cardId }} clanId={clanId} reactions={reactions} onChange={setReactions} />
+          <CommentSheet target={{ checkInId: card.cardId }} clanId={clanId} count={commentCount} onCountChange={setCommentCount} />
         </View>
       </View>
     </View>

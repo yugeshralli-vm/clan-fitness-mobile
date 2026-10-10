@@ -1,13 +1,15 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { ActivityIndicator, Pressable, RefreshControl, SectionList, View } from "react-native";
 import { Text } from "@/components/ui/Text";
 import { useActiveClan } from "@/features/clans";
 import { useRealtime } from "@/features/realtime";
 import { colors } from "@/styles/tokens";
-import { useClanFeed } from "../hooks/useClanFeed";
+import { useClanFeed, withSystemPosts } from "../hooks/useClanFeed";
 import { FeedCard } from "./FeedCard";
+import type { FeedItem } from "../types";
 import { FeedSectionHeader } from "./FeedSectionHeader";
+import { SystemPostCard } from "./SystemPostCard";
 
 /**
  * Port of the web clan page (/clans/[clanId]): clan name, description and member count, then the
@@ -16,9 +18,11 @@ import { FeedSectionHeader } from "./FeedSectionHeader";
  */
 export function FeedScreen() {
   const { activeClan, clans, loading: clanLoading, error: clanError } = useActiveClan();
-  const { sections, hasMore, loading, loadingMore, error, refresh, silentRefresh, loadMore } = useClanFeed(activeClan?.id ?? null);
+  const { sections, systemPosts, hasMore, loading, loadingMore, error, refresh, silentRefresh, loadMore } = useClanFeed(activeClan?.id ?? null);
   // New check-ins, edits, comments and reactions from clanmates appear without a pull-to-refresh.
   useRealtime({ events: ["feed_post", "feed_engagement"], clanId: activeClan?.id, onChange: silentRefresh });
+
+  const displaySections = useMemo(() => withSystemPosts(sections, systemPosts, !hasMore), [sections, systemPosts, hasMore]);
 
   // Opened from a notification (?checkIn=): scroll to that card and highlight it for 2s, like the
   // web. Only within what's loaded — the first page covers recent activity, which is what
@@ -30,13 +34,14 @@ export function FeedScreen() {
   useEffect(() => {
     if (!checkIn || loading) return;
     router.setParams({ checkIn: undefined });
-    const sectionIndex = sections.findIndex((section) => section.cards.some((card) => card.cardId === checkIn));
+    const isTarget = (item: FeedItem) => item.kind === "card" && item.card.cardId === checkIn;
+    const sectionIndex = displaySections.findIndex((section) => section.items.some(isTarget));
     if (sectionIndex === -1) return;
-    const itemIndex = sections[sectionIndex].cards.findIndex((card) => card.cardId === checkIn);
+    const itemIndex = displaySections[sectionIndex].items.findIndex(isTarget);
     setHighlightedCardId(checkIn);
     // After layout, so the target row has been measured.
     requestAnimationFrame(() => listRef.current?.scrollToLocation({ sectionIndex, itemIndex, viewPosition: 0.5 }));
-  }, [checkIn, loading, sections, router]);
+  }, [checkIn, loading, displaySections, router]);
   useEffect(() => {
     if (!highlightedCardId) return;
     const timeout = setTimeout(() => setHighlightedCardId(null), 2000);
@@ -71,9 +76,15 @@ export function FeedScreen() {
       onScrollToIndexFailed={() => {}}
       className="flex-1"
       contentContainerStyle={{ paddingHorizontal: 24, paddingTop: 32, paddingBottom: 32 }}
-      sections={sections.map((section) => ({ ...section, data: section.cards }))}
-      keyExtractor={(card) => card.cardId}
-      renderItem={({ item }) => <FeedCard card={item} clanId={activeClan.id} highlighted={item.cardId === highlightedCardId} />}
+      sections={displaySections.map((section) => ({ ...section, data: section.items }))}
+      keyExtractor={(item) => (item.kind === "card" ? item.card.cardId : item.post.id)}
+      renderItem={({ item }) =>
+        item.kind === "card" ? (
+          <FeedCard card={item.card} clanId={activeClan.id} highlighted={item.card.cardId === highlightedCardId} />
+        ) : (
+          <SystemPostCard post={item.post} clanId={activeClan.id} />
+        )
+      }
       renderSectionHeader={({ section }) => <FeedSectionHeader dayLabel={section.dayLabel} />}
       ItemSeparatorComponent={() => <View className="h-3" />}
       renderSectionFooter={() => <View className="h-6" />}

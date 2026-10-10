@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useApiToken } from "@/hooks/useApiToken";
 import { getFeed } from "../services/feed";
-import type { FeedSection } from "../types";
+import type { FeedItem, FeedSection, SystemPost } from "../types";
 
 const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
@@ -38,9 +38,34 @@ function mergeHead(existing: FeedSection[], head: FeedSection[]): FeedSection[] 
   return [...merged, ...existing.filter((s) => s.day < oldestHeadDay)];
 }
 
+/**
+ * The web's mergeFeedCards for the app: weekly recaps go into their day's section (a new section
+ * if that day has no check-ins), ordered by time with the cards, newest first. Only recaps no older
+ * than the oldest loaded day are placed, so an old recap waits for "Load more" to reach its day
+ * instead of sitting out of order at the bottom.
+ */
+export function withSystemPosts(sections: FeedSection[], posts: SystemPost[], allLoaded: boolean) {
+  const oldestDay = sections[sections.length - 1]?.day;
+  const placeable = posts.filter((post) => allLoaded || !oldestDay || post.day >= oldestDay);
+  const days = [...new Set([...sections.map((s) => s.day), ...placeable.map((p) => p.day)])].sort().reverse();
+  return days.map((day) => {
+    const section = sections.find((s) => s.day === day);
+    const items: (FeedItem & { at: string })[] = [
+      ...(section?.cards ?? []).map((card) => ({ kind: "card" as const, card, at: card.latestAt })),
+      ...placeable.filter((p) => p.day === day).map((post) => ({ kind: "systemPost" as const, post, at: post.createdAt })),
+    ].sort((a, b) => b.at.localeCompare(a.at));
+    return {
+      day,
+      dayLabel: section?.dayLabel ?? placeable.find((p) => p.day === day)!.dayLabel,
+      items: items.map(({ at: _at, ...item }) => item as FeedItem),
+    };
+  });
+}
+
 export function useClanFeed(clanId: string | null) {
   const getToken = useApiToken();
   const [sections, setSections] = useState<FeedSection[]>([]);
+  const [systemPosts, setSystemPosts] = useState<SystemPost[]>([]);
   const [hasMore, setHasMore] = useState(false);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -57,6 +82,7 @@ export function useClanFeed(clanId: string | null) {
       const response = await getFeed(getToken, { clanId, timezone });
       extraPagesRef.current = 0;
       setSections(response.sections);
+      setSystemPosts(response.systemPosts ?? []);
       setHasMore(response.hasMore);
       setNextCursor(response.nextCursor);
     } catch (err) {
@@ -71,6 +97,7 @@ export function useClanFeed(clanId: string | null) {
     if (!clanId) return;
     try {
       const response = await getFeed(getToken, { clanId, timezone });
+      setSystemPosts(response.systemPosts ?? []);
       if (extraPagesRef.current === 0) {
         setSections(response.sections);
         setHasMore(response.hasMore);
@@ -103,5 +130,5 @@ export function useClanFeed(clanId: string | null) {
     refresh();
   }, [refresh]);
 
-  return { sections, hasMore, loading, loadingMore, error, refresh, silentRefresh, loadMore };
+  return { sections, systemPosts, hasMore, loading, loadingMore, error, refresh, silentRefresh, loadMore };
 }

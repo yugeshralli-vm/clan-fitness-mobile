@@ -1,4 +1,5 @@
 import { useRef, useState } from "react";
+import type { FeedTarget } from "@/lib/feed-target";
 import { ActivityIndicator, Pressable, View } from "react-native";
 import { OnlineAvatar } from "@/components/shared/OnlineAvatar";
 import { MentionInput, type MentionInputHandle, type MentionMember } from "@/components/shared/MentionInput";
@@ -14,7 +15,7 @@ import { COMMENT_MAX_LENGTH, type CommentWithUser } from "../types";
  * a ✕ on your own, and the "Add a comment... (@ to mention)" composer with Post.
  */
 export function CommentThread({
-  checkInId,
+  target,
   clanId,
   comments,
   loading,
@@ -22,7 +23,7 @@ export function CommentThread({
   members,
   onCommentsChange,
 }: {
-  checkInId: string;
+  target: FeedTarget;
   clanId: string;
   comments: CommentWithUser[];
   loading: boolean;
@@ -41,7 +42,7 @@ export function CommentThread({
     const raw = inputRef.current?.getMarkupValue() ?? text;
     setPending(true);
     try {
-      const { comment } = await addComment(getToken, checkInId, clanId, raw);
+      const { comment } = await addComment(getToken, target, clanId, raw);
       setError(null);
       setText("");
       inputRef.current?.reset();

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import type { FeedTarget } from "@/lib/feed-target";
 import { ActivityIndicator, Pressable, View } from "react-native";
 import { Avatar } from "@/components/shared/Avatar";
 import { BottomSheet } from "@/components/ui/BottomSheet";
@@ -15,12 +16,12 @@ const LONG_PRESS_MS = 450; // same as web
  * toggle, long-press to see who reacted in a sheet.
  */
 export function ReactionBar({
-  checkInId,
+  target,
   clanId,
   reactions,
   onChange,
 }: {
-  checkInId: string;
+  target: FeedTarget;
   clanId: string;
   reactions: ReactionCounts;
   onChange: (next: ReactionCounts) => void;
@@ -34,7 +35,7 @@ export function ReactionBar({
     if (pending) return;
     setPending(true);
     try {
-      onChange((await toggleReaction(getToken, checkInId, clanId, emoji)).reactions);
+      onChange((await toggleReaction(getToken, target, clanId, emoji)).reactions);
     } catch {
       // Leave the pills as they were; the next feed refresh shows the real state.
     } finally {
@@ -46,7 +47,7 @@ export function ReactionBar({
     setDetailEmoji(emoji);
     setReactors(null);
     try {
-      const { reactions: withNames } = await getReactions(getToken, checkInId, clanId);
+      const { reactions: withNames } = await getReactions(getToken, target, clanId);
       setReactors(withNames[emoji]?.users ?? []);
     } catch {
       setReactors([]);
