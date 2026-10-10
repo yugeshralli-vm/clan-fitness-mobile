@@ -1,4 +1,3 @@
-import { Image } from "expo-image";
 import { useEffect, useRef, useState } from "react";
 import { ActivityIndicator, RefreshControl, ScrollView, View } from "react-native";
 import { Button } from "@/components/ui/Button";
@@ -12,6 +11,7 @@ import { useTodaysLogs } from "../hooks/useTodaysLogs";
 import type { FoodStatus } from "../types";
 import { LogSection } from "./LogSection";
 import { LogSummaryCard } from "./LogSummaryCard";
+import { PhotoPicker, type PhotoSlot } from "./PhotoPicker";
 
 // Same labels/order as the web form's STATUS_OPTIONS.
 const STATUS_OPTIONS: { value: FoodStatus; label: string }[] = [
@@ -38,6 +38,7 @@ export function LogsScreen() {
   const [foodStatus, setFoodStatus] = useState<FoodStatus | undefined>(undefined);
   const [foodNote, setFoodNote] = useState("");
   const [thought, setThought] = useState("");
+  const [photos, setPhotos] = useState<PhotoSlot[]>([]);
 
   useEffect(() => {
     if (!logs) return;
@@ -48,6 +49,7 @@ export function LogsScreen() {
     setFoodStatus(logs.food?.status);
     setFoodNote(logs.food?.note ?? "");
     setThought(logs.thought?.text ?? "");
+    setPhotos((logs.food?.photoUrls ?? []).map((url) => ({ kind: "existing", url })));
   }, [logs]);
 
   // Offer Health Connect's count in the Steps field when it's higher than what's logged. It's only a
@@ -66,7 +68,9 @@ export function LogsScreen() {
   }
 
   const alreadyWorkedOut = !!logs.gym;
-  const existingPhotos = logs.food?.photoUrls ?? [];
+  // Like the web: saving while a photo is still uploading, or after one failed, would quietly drop it.
+  const anyUploading = photos.some((p) => p.kind === "new" && p.uploading);
+  const anyPhotoErrors = photos.some((p) => p.kind === "new" && !!p.error);
 
   function handleSave() {
     save({
@@ -76,6 +80,7 @@ export function LogsScreen() {
       stepsCount: stepsCount.trim() ? Number(stepsCount) : undefined,
       foodStatus,
       foodNote: foodNote.trim() || undefined,
+      photoUrls: photos.flatMap((p) => (p.url ? [p.url] : [])),
       thought: thought.trim() || undefined,
     });
   }
@@ -132,28 +137,19 @@ export function LogsScreen() {
         </LogSection>
 
         <LogSection emoji="📷" title="Photo" aside="Optional">
-          <Text className="text-xs text-foregroundTertiary">
-            {existingPhotos.length > 0 ? `${existingPhotos.length}/3 photos` : "Saves on their own, no other answer needed"}
-          </Text>
-          {existingPhotos.length > 0 && (
-            <View className="flex-row flex-wrap gap-2">
-              {existingPhotos.map((url) => (
-                <Image key={url} source={{ uri: url }} style={{ width: 56, height: 56, borderRadius: 8 }} contentFit="cover" />
-              ))}
-            </View>
-          )}
-          <Text className="text-xs text-foregroundMuted">Adding photos from the app is coming in the next update.</Text>
+          <PhotoPicker slots={photos} onChange={setPhotos} />
         </LogSection>
 
         <LogSection emoji="💭" title="Thought" aside="Optional">
           <Input value={thought} onChangeText={setThought} placeholder="What's on your mind?" maxLength={200} multiline />
         </LogSection>
 
+        {anyPhotoErrors && <Text className="text-sm text-danger">Remove the failed photo above before saving.</Text>}
         {saveError && <Text className="text-sm text-danger">{saveError}</Text>}
         <Button
           title={saving ? "Saving..." : logs.hasLoggedToday ? "Update today's log" : "Save today's log"}
           onPress={handleSave}
-          disabled={saving}
+          disabled={saving || anyUploading || anyPhotoErrors}
         />
       </View>
     </ScrollView>

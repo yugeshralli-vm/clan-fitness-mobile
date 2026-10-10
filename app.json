@@ -83,6 +83,14 @@
           }
         }
       ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Clan Fitness uses your photos so you can add meal photos to your daily log.",
+          "cameraPermission": "Clan Fitness uses the camera so you can take meal photos for your daily log.",
+          "microphonePermission": false
+        }
+      ],
       "react-native-health-connect",
       [
         "expo-build-properties",
