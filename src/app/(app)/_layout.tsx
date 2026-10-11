@@ -7,6 +7,7 @@ import { RewardSnackbar } from "@/components/ui/RewardSnackbar";
 import { ActiveClanProvider, useActiveClan } from "@/features/clans";
 import { HealthStepsProvider } from "@/features/health";
 import { usePushSetup } from "@/features/push";
+import { takePendingInvite } from "@/lib/pending-invite";
 import { RealtimeProvider } from "@/features/realtime";
 import { useKeyboardHeight } from "@/hooks/useKeyboardHeight";
 import { colors } from "@/styles/tokens";
@@ -79,9 +80,17 @@ function OnboardingGate({
   const onOnboarding = pathname === "/onboarding";
   const noClans = !loading && !error && clans.length === 0;
 
+  // An invite link opened while signed out: continue to joining now that you're in.
   useEffect(() => {
-    if (noClans && !onOnboarding) router.replace("/onboarding");
-  }, [noClans, onOnboarding, router]);
+    const code = takePendingInvite();
+    if (code) router.push({ pathname: "/clans/join", params: { code } });
+  }, [router]);
+
+  // Joining or creating from an invite link is a way out of onboarding too, so leave those be.
+  const joiningOrCreating = pathname === "/clans/join" || pathname === "/clans/new";
+  useEffect(() => {
+    if (noClans && !onOnboarding && !joiningOrCreating) router.replace("/onboarding");
+  }, [noClans, onOnboarding, joiningOrCreating, router]);
 
   return (
     <>
